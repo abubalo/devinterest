@@ -1,38 +1,54 @@
 datasource db {
-    provider  = "postgresql"
-    url       = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
 generator client {
-    provider      = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 model User {
-    id         String   @id @default(cuid())
-    name       String   @db.VarChar(100)
-    email      String   @unique @db.VarChar(100)
-    bio        String
-    gender     String   @db.VarChar(10)
-    password   String   @db.VarChar(30)
-    avatarUrl String
-    location String?
+    id        String   @id @unique @default(cuid())
+    name      String   @db.VarChar(100)
+    bio       String
+    email     String   @unique @db.VarChar(100)
+    password  String   @db.VarChar(30)
+    avatarUrl String?
+    location  String?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    follower User[] @relation("Following")
+    follower  User[] @relation("Following")
     following User[] @relation("Following")
 
+    profile  Profile?
     posts    Post[]
     messages Message[]
-    Chats    Chat[]
+    chats    Chat[]
+    comments Comment[]
 
     @@map("user")
 }
 
+enum Gender {
+    MALE
+    FEMALE
+    OTHER
+}
+
+model Profile {
+    id     String @id @unique @default(cuid())
+    bio    String
+    gender String
+
+    user   User   @relation(fields: [userId], references: [id])
+    userId String @unique
+}
+
 model Post {
-    id         String   @id @default(cuid())
-    title      String   @db.VarChar(250)
-    content    String
+    id        String   @id @unique @default(cuid())
+    title     String   @db.VarChar(250)
+    content   String
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now())
 
@@ -40,13 +56,13 @@ model Post {
     authorId String
 
     comments Comment[]
-    tags     Tag[]     @relation("tags")
+    tags     Tag[]     @relation("Posts")
 
     @@map("post")
 }
 
 model Chat {
-    id         String   @id @default(cuid())
+    id        String   @id @unique @default(cuid())
     createdAt DateTime @default(now())
 
     messages Message[]
@@ -59,35 +75,38 @@ model Chat {
 }
 
 model Comment {
-    id         String   @id @default(cuid())
-    content    String
+    id        String   @id @unique @default(cuid())
+    content   String
     createdAt DateTime @default(now())
+    authorId  String?
+    author    User?    @relation(fields: [authorId], references: [id])
+    post      Post     @relation(fields: [postId], references: [id])
+    postId    String   @unique
 
-    post   Post   @relation(fields: [postId], references: [id])
-    postId String
+    replyId String @unique
+    replies Comment?  @relation("Replies", fields: [replyId], references: [id])
 
+    ParentComment Comment? @relation("Replies")
     @@map("comment")
 }
 
 model Tag {
-    id   Int @id @default(autoincrement())
-    name String @unique @db.VarChar(15)
-
-    posts Post[] @relation("tags")
+    id     Int    @id @unique @default(autoincrement())
+    name   String @unique @db.VarChar(15)
+    posts  Post   @relation("Posts", references: [id], fields: [postId])
+    postId String
 
     @@map("tag")
 }
 
 model Message {
-    id         String   @id @default(cuid())
-    content    String
+    id        String   @id @unique @default(cuid())
+    content   String   @db.Text
     createdAt DateTime @default(now())
-
-    author   User   @relation(fields: [authorId], references: [id])
-    authorId String
-
-    chat   Chat   @relation(fields: [chatId], references: [id])
-    chatId String
+    author    User     @relation(fields: [authorId], references: [id])
+    authorId  String
+    chat      Chat     @relation(fields: [chatId], references: [id])
+    chatId    String
 
     @@map("message")
 }
