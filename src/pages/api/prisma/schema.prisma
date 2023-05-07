@@ -13,13 +13,14 @@ model User {
     bio       String
     email     String   @unique @db.VarChar(100)
     password  String   @db.VarChar(30)
+    gender    Gender
     avatarUrl String?
     location  String?
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    follower  User[] @relation("Following")
-    following User[] @relation("Following")
+    follower  User[] @relation("following")
+    following User[] @relation("following")
 
     profile  Profile?
     posts    Post[]
@@ -43,6 +44,8 @@ model Profile {
 
     user   User   @relation(fields: [userId], references: [id])
     userId String @unique
+
+    @@map("profile")
 }
 
 model Post {
@@ -83,10 +86,11 @@ model Comment {
     post      Post     @relation(fields: [postId], references: [id])
     postId    String   @unique
 
-    replyId String @unique
-    replies Comment?  @relation("Replies", fields: [replyId], references: [id])
+    replyId String   @unique
+    replies Comment? @relation("Replies", fields: [replyId], references: [id])
 
     ParentComment Comment? @relation("Replies")
+
     @@map("comment")
 }
 
