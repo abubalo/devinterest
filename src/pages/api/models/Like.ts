@@ -1,23 +1,23 @@
 export class Like{
-    private id: number;
-    private postId: number;
-    private userId: number;
+    private id: string;
+    private postId: string;
+    private userId: string;
     private likedAt?: Date;
 
-    constructor(id: number, postId: number, userId: number, likedAt: Date){
+    constructor(id: string, postId: string, userId: string, likedAt: Date){
         this.id = id;
         this.postId = postId;
         this.userId = userId;
         this.likedAt = likedAt;
     }
 
-    public getId(): number{
+    public getId(): string{
         return this.id
     }
-    public getPostId(): number{
+    public getPostId(): string{
         return this.postId
     }
-    public getUserId(): number{
+    public getUserId(): string{
         return this.userId
     }
 
