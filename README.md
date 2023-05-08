@@ -5,7 +5,7 @@
 Dev Interest is a platform that allows developers to connect, share ideas, and post useful content. The platform is inspired by Pinterest and uses a Twitter-like interface. It is also a subscription-based platform that allows private chat.
 
 <!-- ## ~~Frontend code is not current available~~ -->
-## Frontend codes are not current available yet
+
 ## Features
 
 - Subscription: can opt for a subscription for accessing premium content
