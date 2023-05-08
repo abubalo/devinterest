@@ -1,140 +1,272 @@
-import { PrismaClient } from "@prisma/client"
+import { PrismaClient } from "@prisma/client";
 import { Post } from "../models/Post";
 import { Like } from "../models/Like";
 import { Tags } from "../models/Tags";
 
 interface IPost {
-    id: number; 
-    title: string; 
-    content: string; 
-    author: Date; 
-    createdAt: Date; 
-    updatedAt: number; 
-    likes: Like[] | undefined; 
-    comments: Comment[] | undefined; 
+  id: string;
+  title: string;
+  content: string;
+  author: Date;
+  createdAt: Date;
+  updatedAt: number;
+  likes: Like[] | undefined;
+  comments: Comment[] | undefined;
 }
-
 
 const prisma = new PrismaClient();
 
-export class PostService{
+export class PostService {
+  public async createPost(
+    authorId: string,
+    title: string,
+    content: string,
+    tags: Tags[]
+  ): Promise<Partial<Post>> {
+    const post = await prisma.post.create({
+      data: {
+        title,
+        content,
+        authorId,
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        tags: true,
+        comments: true,
+      },
+    });
 
-    public async createPost(author: number, title: string, content: string, tags: Tags[]): Promise<Partial<Post>>{
+    await this.createTags(authorId, tags);
 
-        const post = await prisma.post.create({
-            title,
-            content,
-            author,         
-        })
+    return new Post(
+      post.id,
+      post.title,
+      post.content,
+      post.createdAt,
+      post.updatedAt,
+      post.author,
+      post.tags,
+      post.comments
+    );
+  }
 
-        await this.createTags(author, tags)
+  public async getAllPosts(): Promise<Post[] | null> {
+    const posts = await prisma.post.findMany({
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        // author: true,
+        tags: true,
+        comments: true,
+      },
+    });
 
-        return new Post(post.id, post.title, post.content, post.author, post.createdAt, post.likes, post.comments)
+    if (posts.length === 0) {
+      return null;
     }
 
-    public async getAllPosts(): Promise<Post[] | null >{
+    return posts.map(
+      (post) =>
+        new Post(
+          post.id,
+          post.title,
+          post.content,
+          post.createdAt,
+          post.updatedAt,
+          post.author,
+          post.tags,
+          post.comments
+        )
+    );
+  }
 
-        const posts = await prisma.post.findMany({
-            include:{
-                authorId: true,
-                likes: true,
-                comments: true,
-            }
-        });
+  public async getPostsbyAuthorId(authorId: string): Promise<Post[] | null> {
+    const posts = await prisma.post.findMany({
+      where: {
+        authorId: authorId,
+      },
 
-        if (posts.length === 0) {
-            return null;
-        }
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        tags: true,
+        comments: true,
+      },
+    });
 
-        return posts;
-
+    if (!posts) {
+      return null;
     }
 
-    public async getPostsbyAuthorId(authorId: number): Promise<Post[] | null >{
-        const posts = await prisma.post.findMany({
-            where:{
-                authorId: authorId,
-            },
+    return posts.map(
+      (post) =>
+        new Post(
+          post.id,
+          post.title,
+          post.content,
+          post.createdAt,
+          post.updatedAt,
+          post.author,
+          post.tags,
+          post.comments
+        )
+    );
+  }
 
-            include:{
-                authorId: true,
-                likes: true,
-                comments: true,
-            }
-        })
+  public async updatePost(
+    postId: string,
+    authorId: string,
+    data: Partial<Post>
+  ): Promise<Post | null> {
+    const user = await prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+    });
 
-        if(!posts){
-            return null;
-        }
+    const post = await prisma.post.update({
+      data:{
+        ...data
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        tags: true,
+        comments: true,
+    });
 
-        return posts.map((post: IPost ) => new Post(post.id, post.title, post.content, post.author, post.createdAt, post.updatedAt, post.likes, post.comments))
+    if (!post) {
+      return null;
     }
 
-    public async updatePost(postId: number, authorId: number, data: Partial<Omit<Post, "id" | 'createdAt' | "likes" | 'comments'>>): Promise<Post | null>{
-        const post = await prisma.post.update({
-            where:{
-                id: postId,
-                author: authorId,
-                    
-            },
-            data:{
-                ...data
-            }
-        })
+    return new Post(
+      post.id,
+      post.title,
+      post.content,
+      post.createdAt,
+      post.updatedAt,
+      post.author,
+      post.comments,
+      post.tags
+    );
+  }
 
-        if(!post){
-            return null;
-        }
-        
-        return new Post(post.id, post.title, post.content, post.author, post.createdAt, post.likes, post.comments);
+  public async deletePost(
+    postId: string,
+    authorId: string
+  ): Promise<boolean | null> {
+    const deletePost = await prisma.post.findUnique({
+      where: {
+        id: postId,
+        // authorId
+      },
+    });
 
+    if (!deletePost) {
+      return null;
     }
 
-    public async deletePost(postId: number, authorId: number): Promise<boolean | null>{
-        const deletePost = await prisma.post.findUnique({
-            where:{
-                id: postId,
-                author: authorId,     
-            }
-        })
+    await prisma.post.delete({
+      where: {
+        id: postId,
+      },
+    });
 
-        if(!deletePost){
-            return null;
-        }
+    return true;
+  }
 
-        await prisma.post.delete({
-            where:{
-                id: postId,
-                author: authorId,     
-            }
-        })
+  public async createComment(
+    content: string,
+    authorId: string,
+    postId: string
+  ): Promise<Comment> {
+    const comment = await prisma.comment.create({
+      data: {
+        content,
+        author: {
+          connect: {
+            id: authorId,
+          },
+        },
+        post: {
+          connect: {
+            id: postId,
+          },
+        },
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        post: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
+        replies: true,
+      },
+    });
 
-        return true;
+    // const {id, conent, author, post, createdAt, replies} = comment
+
+    const newComment = new Comment();
+    // comment.id,
+    // comment.content,
+    // comment.author,
+    // comment.post,
+    // comment.createdAt,
+    // comment.replies
+
+    return newComment;
+  }
+
+  public async createTags(postId: string, postTags: Tags[]): Promise<Tags[]> {
+    let newTags = [];
+
+    for (let i = 0; i < postTags.length; i++) {
+      const tag = postTags[i];
+
+      await prisma.tag.create({
+        data: {
+          name: tag,
+          postId,
+        },
+      });
+
+      newTags.push(tag);
     }
 
-    public async createTags(postId: number, postTags: Tags[]): Promise<Tags[]>{
-        let newTags = [];
+    return newTags;
+  }
 
-        for (let i = 0; i < postTags.length; i++) {
-            const tag = postTags[i];
-            
-            await prisma.tag.create({
-               data:{
-                name: postTags,
-                postId
-               }
-            })
+  public async addReply(
+    authorId: string,
+    postId: string,
+    commentId: string | string[]
+  ): Promise<void> {}
 
-            
-            newTags.push(tag)
-        }
+  // public bookmarkedPost(): Post{
 
-        return newTags;
-        
-        
-    }
-
-    public bookmarkedPost(): Post{
-        
-    }
+  // }
 }
