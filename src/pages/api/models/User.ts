@@ -2,36 +2,36 @@ import { Post } from "./Post";
 import { Chat } from "./Chat";
 
 export class User {
-  private readonly id: number;
+  private readonly id: string;
   private name: string;
   private email: string;
-  private bio?: string | undefined;
+  private bio?: string ;
   private gender?: string;
   private password: string;
-  private avatarUrl?: string | undefined;
-  private location?: string | undefined;
+  private avatarUrl?: string;
+  private location?: string;
   private createdAt: Date;
+  private updatedAt: Date;
   private follower: User[];
   private following: User[];
-  private updatedAt: Date;
   private posts?: Post[];
   private chats?: Chat[];
 
   constructor(
-    id: number,
+    id: string,
     name: string,
-    bio: string,
     email: string,
+    bio: string,
     gender: string,
     password: string,
     avatarUrl: string,
     location: string,
     createdAt: Date,
     updatedAt: Date,
-    follower: User[],
-    following: User[],
-    posts: Post[],
-    chats: Chat[]
+    follower: User[] = [],
+    following: User[] = [],
+    posts: Post[] = [],
+    chats: Chat[] = []
   ) {
     this.id = id;
     this.name = name;
@@ -49,8 +49,8 @@ export class User {
     this.chats = chats;
   }
 
-  public getId(): number{
-    return this.id
+  public getId(): string {
+    return this.id;
   }
   public getName(): string {
     return this.name;
@@ -69,10 +69,10 @@ export class User {
   public getPassword(): string {
     return this.password;
   }
-  public getAvatarUrl(): string | undefined {
+  public getAvatarUrl(): string | undefined{
     return this.avatarUrl;
   }
-  public getLocation(): string | undefined{
+  public getLocation(): string | undefined {
     return this.location;
   }
 
@@ -84,34 +84,15 @@ export class User {
     return this.updatedAt;
   }
 
-
-  public getFollowers(): User[] | undefined {
+  public getFollowers(): User[] {
     return this.follower;
   }
 
-  public getFollowings(): User[] | undefined {
+  public getFollowings(): User[] {
     return this.following;
   }
 
-  public followUser(user:User): void{
-      this.following.push(user);
-      this.follower.push(this)
-  }
-  public unfollowUser(user: User): void{
-    // Find index of user who unfollowed
-    const userIndex = this.following.findIndex((followingUser)=> followingUser.getId() === user.getId());
-
-    // if user aready exist, replace the user
-    if(userIndex !== -1){
-      this.following.splice(userIndex, 1);
-    }
-
-    const thisUserIndex = this.getFollowers()?.findIndex((follower)=> follower.getId() === user.getId());
-
-    if(thisUserIndex !== -1){
-      user.getFollowers()?.splice(thisUserIndex, 1);
-    }
-  }
+  
 
   public getPosts(): Post[] | undefined {
     return this.posts;
