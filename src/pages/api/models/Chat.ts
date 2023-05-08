@@ -1,13 +1,13 @@
 import { Message } from "./Message";
 
 export class Chat{
-    private readonly id: number;
+    private readonly id: string;
     private content: string;
     private createdAt: Date;
     private userId: number;
     private messages: Message[];
 
-    constructor(id: number, content: string, createdAt: Date, userId: number, messages: Message[]){
+    constructor(id: string, content: string, createdAt: Date, userId: number, messages: Message[]){
         this.id = id;
         this.content = content;
         this.createdAt = createdAt;
@@ -15,15 +15,12 @@ export class Chat{
         this.messages = messages;
     }
 
-    public getId(): number{
+    public getId(): string{
         return this.id;
     }
 
     public getContent(): string{
         return this.content;
-    }
-    public getUserId(): number{
-        return this.userId;
     }
 
     public getCreatedAt(): Date{
