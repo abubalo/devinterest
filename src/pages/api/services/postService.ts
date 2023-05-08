@@ -131,42 +131,47 @@ export class PostService {
     authorId: string,
     data: Partial<Post>
   ): Promise<Post | null> {
-    const user = await prisma.post.findUnique({
-      where: {
-        id: postId,
-      },
-    });
-
-    const post = await prisma.post.update({
-      data:{
-        ...data
-      },
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-          },
+    try {
+      const post = await prisma.post.update({
+        where: {
+          id: postId,
         },
-        tags: true,
-        comments: true,
-    });
-
-    if (!post) {
+        data: {
+          ...data,
+          authorId: authorId,
+        },
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          tags: true,
+          comments: true,
+        },
+      });
+  
+      if (!post) {
+        return null;
+      }
+  
+      return new Post(
+        post.id,
+        post.title,
+        post.content,
+        post.createdAt,
+        post.updatedAt,
+        post.author,
+        post.comments,
+        post.tags
+      );
+    } catch (error) {
+      console.error(error);
       return null;
     }
-
-    return new Post(
-      post.id,
-      post.title,
-      post.content,
-      post.createdAt,
-      post.updatedAt,
-      post.author,
-      post.comments,
-      post.tags
-    );
   }
+  
 
   public async deletePost(
     postId: string,
