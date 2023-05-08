@@ -68,7 +68,7 @@ class UserController{
     }
 
      public getUserById = async (req: NextApiRequest, res:NextApiResponse): Promise<void> =>{
-        const id = typeof req.query.id === 'string' ? parseInt(req.query.id) : undefined;
+        const id = typeof req.query.id === 'string' ? req.query.id : undefined;
         if(id == undefined){
             res.status(400).json({ message: 'Invalid or missing ID parameter' });
             return;
