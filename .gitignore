@@ -3,6 +3,9 @@
 # Hide documentation when it's not ready
 /documentation
 
+# hide prisma migration
+/prisma/migrations/*
+!/prisma/migrations/.keep
 # dependencies
 /node_modules
 /.pnp
