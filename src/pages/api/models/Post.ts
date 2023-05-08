@@ -1,8 +1,9 @@
+import { PrismaClient } from "@prisma/client";
 import { Like } from "./Like";
 import { Tags } from "./Tags";
-
+import { User } from "./User";
 export class Post {
-  private readonly id: number;
+  private readonly id: string;
   private title: string;
   private content: string;
   private imagePost?: string | undefined;
@@ -10,10 +11,10 @@ export class Post {
   private updatedAt?: Date;
   private likes?: Like[] | undefined;
   private comments?: Comment[] | undefined;
-  private tags?: Tags[] | undefinedgit ;
-  private author: number;
+  private tags?: Tags[] | undefined ;
+  private author: Partial<User>;
 
-  constructor(id: number, title: string, content: string, createdAt: Date, updatedAt: Date, author: number, likes: Like[] = [], comments: Comment[] = [], tags: Tags[] = []) {
+  constructor(id: string, title: string, content: string, createdAt: Date, updatedAt: Date, author: Partial<User>, likes: Like[] = [], comments: Comment[] = [], tags: Tags[] = []) {
     this.id = id;
     this.title = title;
     this.content = content;
@@ -25,7 +26,7 @@ export class Post {
     this.tags = tags;
   }
 
-  public getId(): number{
+  public getId(): string{
     return this.id
   }
 
@@ -55,7 +56,7 @@ export class Post {
   public getTags(): Tags[] | undefined{
     return this.tags;
   }
-  public getAuthor(): number{
+  public getAuthor(): Partial<User>{
     return this.author;
   }
 
