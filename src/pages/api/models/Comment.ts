@@ -2,15 +2,15 @@ import { User } from "./User";
 import { Post } from "./Post";
 
 export class Comment {
-  private readonly id: number;
+  private readonly id: string;
   private content: string;
   private readonly author: User;
   private readonly post: Post;
-  private readonly createdAt?: Date;
-  private replies: Comment[];
+  private readonly createdAt: Date;
+  private replies?: Comment[] | undefined;
 
   constructor(
-    id: number,
+    id: string,
     content: string,
     author: User,
     post: Post,
@@ -25,7 +25,7 @@ export class Comment {
     this.replies = replies;
   }
 
-  public getId(): number {
+  public getId(): string {
     return this.id;
   }
 
@@ -49,12 +49,12 @@ export class Comment {
     return this.createdAt;
   }
 
-  public getReplies(): Comment[] {
+  public getReplies(): Comment[] | undefined {
     return this.replies;
   }
 
-  public addReply(reply: Comment): void {
-    this.replies.push(reply);
+  public addReply(reply: Comment): void{
+    this.replies?.push(reply);
   }
 
 }
