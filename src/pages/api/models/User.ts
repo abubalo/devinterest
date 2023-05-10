@@ -5,15 +5,11 @@ export class User {
   private readonly id: string;
   private name: string;
   private email: string;
-  private bio?: string ;
-  private gender?: string;
   private password: string;
-  private avatarUrl?: string;
-  private location?: string;
   private createdAt: Date;
-  private updatedAt: Date;
-  private follower: User[];
-  private following: User[];
+  private updatedAt?: Date;
+  private follower?: User[];
+  private following?: User[];
   private posts?: Post[];
   private chats?: Chat[];
 
@@ -21,11 +17,7 @@ export class User {
     id: string,
     name: string,
     email: string,
-    bio: string,
-    gender: string,
     password: string,
-    avatarUrl: string,
-    location: string,
     createdAt: Date,
     updatedAt: Date,
     follower: User[] = [],
@@ -36,11 +28,7 @@ export class User {
     this.id = id;
     this.name = name;
     this.email = email;
-    this.bio = bio;
-    this.gender = gender;
     this.password = password;
-    this.avatarUrl = avatarUrl;
-    this.location = location;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.follower = follower;
@@ -49,56 +37,46 @@ export class User {
     this.chats = chats;
   }
 
-  public getId(): string {
+  private getId(): string {
     return this.id;
   }
-  public getName(): string {
+  private getName(): string {
     return this.name;
   }
 
-  public getEmail(): string {
+  private getEmail(): string {
     return this.email;
   }
-  public getUserBio(): string | undefined {
-    return this.bio;
-  }
-  public getGender(): string | undefined {
-    return this.gender;
-  }
 
-  public getPassword(): string {
+
+  private getPassword(): string {
     return this.password;
   }
-  public getAvatarUrl(): string | undefined{
-    return this.avatarUrl;
-  }
-  public getLocation(): string | undefined {
-    return this.location;
-  }
+  
 
-  public getCreatedAt(): Date {
+  private getCreatedAt(): Date {
     return this.createdAt;
   }
 
-  public getUpdatedAt(): Date {
+  private getUpdatedAt(): Date | undefined {
     return this.updatedAt;
   }
 
-  public getFollowers(): User[] {
+  private getFollowers(): User[] | undefined {
     return this.follower;
   }
 
-  public getFollowings(): User[] {
+  private getFollowings(): User[] | undefined{
     return this.following;
   }
 
   
 
-  public getPosts(): Post[] | undefined {
+  private getPosts(): Post[] | undefined {
     return this.posts;
   }
 
-  public getChats(): Chat[] | undefined {
+  private getChats(): Chat[] | undefined {
     return this.chats;
   }
 }
