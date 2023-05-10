@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { User } from "../models/User";
+import { Profile } from "../models/Profile";
 import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
 
@@ -7,53 +8,35 @@ import Jwt from "jsonwebtoken";
 const prisma = new PrismaClient();
 
 export class UserService {
-  SALT_ROUNDS = 10;
-  salt = bcrypt.genSaltSync(this.SALT_ROUNDS);
+  
+  public async createUser(name: string, email: string, password: string): Promise<User | void | Error> {
 
-  public async createUser(
-    name: string,
-    bio: string,
-    email: string,
-    gender: string,
-    password: string,
-    location: string,
-  ): Promise<User> {
-    const hashPasword = bcrypt.hashSync(password, this.salt);
-    const user = await prisma.user.create({
-      data: {
-        name,
-        bio,
-        email,
-        password: hashPasword,
-        gender,
-        // avatarUrl,
-        location
-      },
-      include:{
-        posts: true,
-        chats: true,
-        follower: true,
-        following: true,
-      }
-    });
+    try {   
+      const saltRounds = 10;
 
+      const salt = bcrypt.genSaltSync(saltRounds);
+      
+      const hashedPassword = bcrypt.hashSync(password, salt).slice(0, 30);
+      const user = await prisma.user.create({
+        data: {
+          name,
+          email,
+          password: hashedPassword,
+        }
+      });
+      return new User(
+        user.id,
+        user.name,
+        user.email,
+        user.password,
+        user.createdAt,
+        user.updatedAt
+        )
+    } catch (error: any) {
+        console.log({providerError: error.message});
+        return error.message
+    }
 
-    return new User(
-      user.id,
-      user.name,
-      user.email,
-      user.bio,
-      user.gender,
-      user.password,
-      user.avatarUrl,
-      user.location,
-      user.createdAt,
-      user.updatedAt,
-      user.follower,
-      user.following,
-      user.posts,
-      user.chats
-    );
   }
 
   public async getUserById(userId: string): Promise<User | null> {
@@ -62,11 +45,11 @@ export class UserService {
         id: userId,
       },
       include:{
-        comments: true,
         follower: true,
         following: true,
         posts: true,
         chats: true,
+        
       }
     });
 
@@ -77,19 +60,11 @@ export class UserService {
     return new User(
       user.id,
       user.name,
-      user.bio,
       user.email,
-      user.gender,
       user.password,
-      user.avatarUrl,
-      user.location,
       user.createdAt,
       user.updatedAt,
-      user.follower,
-      user.following,
-      user.posts,
-      user.chats
-    );
+    )
   }
 
   public async getUserByEmail(userEmail: string): Promise<boolean | null> {
@@ -98,7 +73,7 @@ export class UserService {
         email: userEmail,
       },
     });
-
+ 
     if (!user) {
       return null;
     }
@@ -108,7 +83,7 @@ export class UserService {
 
   public async updateUser(
     userId: string,
-    data: User
+    data: Partial<User>
   ): Promise<User | null> {
     const user = await prisma.user.update({
       where:{
@@ -133,19 +108,13 @@ export class UserService {
     return new User(
       user.id,
       user.name,
-      user.bio,
       user.email,
-      user.gender,
       user.password,
-      user.avatarUrl,
-      user.location,
       user.createdAt,
       user.updatedAt,
-      user.follower,
-      user.following,
-      user.posts,
-      user.chats
-    );
+      // user.follower, 
+      // user.following
+    )
     
   }
 
@@ -178,7 +147,6 @@ export class UserService {
     
     if (!currentUser) {
       return null;
-      throw new Error(`User with ID ${userId} not found`);
     }
     
     await prisma.user.update({
@@ -209,7 +177,7 @@ export class UserService {
   }
 
   public async unfollowUser(userId: string, targetId: string): Promise<void> {
-    // get the id of user who wants to unfollow another user, and the id of account they want to unfollow. It then updates the user's following field in the database by removing the targetUserId to the list of users they are following.
+    
     const currentUser = await prisma.user.findUnique({
       where: {
         id: userId,
@@ -226,7 +194,7 @@ export class UserService {
       },
       data: {
         following: {
-          connect: {
+          disconnect: {
             id: targetId,
           },
         },
@@ -269,25 +237,20 @@ export class UserService {
     return true;
   }
 
-  public generateAccessToken(user: User): string {
+  public async generateAccessToken(user: Partial<User>): Promise<string> {
     const jtwSecret = process.env.JWT_SECRET;
 
     if (!jtwSecret) {
       throw new Error("JWT is not define");
     }
-    const token = Jwt.sign({ sub: user.getId() }, jtwSecret, {
+    const token: string = Jwt.sign({ sub: user }, jtwSecret, {
       expiresIn: "1h",
     });
 
     return token;
   }
 
-//   public verifyAccessToken(token: string): Promise<boolean | null> {
-//     // code goes here
-//     if(token){
-//         return null
-//     }
-//   }
+
 }
 
 export default UserService;
