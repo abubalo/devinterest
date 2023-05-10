@@ -1,32 +1,30 @@
 import UserService from "@/pages/api/services/userService";
+import { User } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 import { validateCreateUser } from "../validations/userValidation";
 
 export interface ExtentendNextApiRequest extends NextApiRequest{
     name: string;
     email: string;
-    bio: string;
-    gender?: string;
-    password: string;
-    avatarUrl?: string;
-    location: string;
+    password?: string,
 }
 const userService = new UserService();
 
 class UserController{
 
-     public createUser = async (req: ExtentendNextApiRequest, res:NextApiResponse): Promise<void> =>{
+    public createUser = async (req: ExtentendNextApiRequest, res:NextApiResponse): Promise<void> =>{
 
         try {
             
+            // validate user data
+            // const {error}: any = await validateCreateUser(req.body);
 
-            const {error}: any = await validateCreateUser(req.body);
+            // if(error){
+            //     res.status(400).json({ error: error.details[0].message });
+            //     return;
+            // }
 
-            if(error){
-                res.status(400).json({ error: error.details[0].message });
-                return;
-            }
-            const {name, email, bio, gender, password, avatarUrl, location} = req.body;
+            const {name, email, password} = req.body;
     
             const isUserExist = await userService.getUserByEmail(email);
     
@@ -34,7 +32,7 @@ class UserController{
                 res.status(409).json("User already exists");
             }
     
-            const user = await userService.createUser(name, email, bio, gender, password, avatarUrl, location);
+            const user = await userService.createUser(name, email, password);
     
             res.status(201).json(user);
     
@@ -45,7 +43,7 @@ class UserController{
     
     }
     
-     public login = async (req: NextApiRequest, res:NextApiResponse): Promise<void> =>{
+     public login = async (req: ExtentendNextApiRequest, res:NextApiResponse): Promise<void> =>{
         try {
             const {email, password} = req.body;
             const user = await userService.authenticateUser(email, password);
@@ -68,7 +66,7 @@ class UserController{
     }
 
      public getUserById = async (req: NextApiRequest, res:NextApiResponse): Promise<void> =>{
-        const id = typeof req.query.id === 'string' ? req.query.id : undefined;
+        const id = typeof req.query.id
         if(id == undefined){
             res.status(400).json({ message: 'Invalid or missing ID parameter' });
             return;
@@ -79,10 +77,11 @@ class UserController{
     
     }
     
+    
      public updateUser = async (req: NextApiRequest, res:NextApiResponse): Promise<void> =>{
         try {
-            const {id, name, email, bio, gender, avatarUrl, location} = req.body;
-            const updateUser = await userService.updateUser(id, {name, bio, email, gender, avatarUrl, location} as Record<string, any>);
+            const {id, name, email, password} = req.body;
+            const updateUser = await userService.updateUser(id , {name, email, password});
     
             if(!updateUser){
                 res.status(404).json({error: "User not found"});
