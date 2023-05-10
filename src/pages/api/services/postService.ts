@@ -1,34 +1,30 @@
 import { PrismaClient } from "@prisma/client";
+import { Comment } from "../models/Comment";
 import { Post } from "../models/Post";
-import { Like } from "../models/Like";
-import { Tags } from "../models/Tags";
-
-interface IPost {
-  id: string;
-  title: string;
-  content: string;
-  author: Date;
-  createdAt: Date;
-  updatedAt: number;
-  likes: Like[] | undefined;
-  comments: Comment[] | undefined;
-}
 
 const prisma = new PrismaClient();
 
 export class PostService {
   public async createPost(
-    authorId: string,
     title: string,
     content: string,
-    tags: Tags[]
-  ): Promise<Partial<Post>> {
+    authorId: string,
+    tags: string[],
+  ): Promise<Post | void> {
+
+    console.log({title, content, authorId, tags});
     const post = await prisma.post.create({
       data: {
         title,
         content,
-        authorId,
+        author:{
+          connect: {id: authorId}
+        },
+        tags:{
+          create: tags ? tags.map(tagName => ({ name: tagName })) : []
       },
+      },
+      
       include: {
         author: {
           select: {
@@ -36,13 +32,11 @@ export class PostService {
             name: true,
           },
         },
-        tags: true,
         comments: true,
+        tags: true,
+        likes: true
       },
     });
-
-    await this.createTags(authorId, tags);
-
     return new Post(
       post.id,
       post.title,
@@ -51,9 +45,13 @@ export class PostService {
       post.updatedAt,
       post.author,
       post.tags,
-      post.comments
+      post.likes,
+      // post.comments,
     );
+
+    // return post
   }
+
 
   public async getAllPosts(): Promise<Post[] | null> {
     const posts = await prisma.post.findMany({
@@ -64,7 +62,7 @@ export class PostService {
             name: true,
           },
         },
-        // author: true,
+        likes: true,
         tags: true,
         comments: true,
       },
@@ -84,7 +82,49 @@ export class PostService {
           post.updatedAt,
           post.author,
           post.tags,
-          post.comments
+          post.likes,
+          // post.comments,
+        )
+    );
+
+    // return posts
+  }
+
+  public async getPostsbyId(postId: string): Promise<Post[] | null> {
+    const posts = await prisma.post.findMany({
+      where: {
+        authorId: postId,
+      },
+
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        tags: true,
+        likes: true,
+        comments: true,
+      },
+    });
+
+    if (!posts) {
+      return null;
+    }
+
+    return posts.map(
+      (post) =>
+        new Post(
+          post.id,
+          post.title,
+          post.content,
+          post.createdAt,
+          post.updatedAt,
+          post.author,
+          post.likes,
+          post.tags,
+          // post.comments
         )
     );
   }
@@ -103,6 +143,7 @@ export class PostService {
           },
         },
         tags: true,
+        likes: true,
         comments: true,
       },
     });
@@ -120,16 +161,20 @@ export class PostService {
           post.createdAt,
           post.updatedAt,
           post.author,
+          post.likes,
           post.tags,
-          post.comments
+          // post.comments
         )
     );
+
+    // return posts
   }
+  
 
   public async updatePost(
     postId: string,
     authorId: string,
-    data: Partial<Post>
+    data: object
   ): Promise<Post | null> {
     try {
       const post = await prisma.post.update({
@@ -140,6 +185,7 @@ export class PostService {
           ...data,
           authorId: authorId,
         },
+        
         include: {
           author: {
             select: {
@@ -149,13 +195,14 @@ export class PostService {
           },
           tags: true,
           comments: true,
+          likes: true,
         },
       });
-  
+
       if (!post) {
         return null;
       }
-  
+
       return new Post(
         post.id,
         post.title,
@@ -163,24 +210,33 @@ export class PostService {
         post.createdAt,
         post.updatedAt,
         post.author,
-        post.comments,
-        post.tags
+        post.tags,
+        post.likes,
+        // post.comments,
       );
+
+      // return post
     } catch (error) {
       console.error(error);
       return null;
     }
   }
-  
 
-  public async deletePost(
-    postId: string,
-    authorId: string
-  ): Promise<boolean | null> {
+  public async deletePost( postId: string, authorId: string): Promise<boolean | null> {
+
+    const postOwner = await prisma.user.findUnique({
+      where: {
+        id: authorId,
+      },
+    });
+
+    if (!postOwner) {
+      return null;
+    }
+
     const deletePost = await prisma.post.findUnique({
       where: {
         id: postId,
-        // authorId
       },
     });
 
@@ -199,9 +255,10 @@ export class PostService {
 
   public async createComment(
     content: string,
-    authorId: string,
-    postId: string
+    postId: string,
+    authorId: string
   ): Promise<Comment> {
+
     const comment = await prisma.comment.create({
       data: {
         content,
@@ -230,36 +287,37 @@ export class PostService {
           },
         },
         replies: true,
+        like: true
       },
     });
 
     // const {id, conent, author, post, createdAt, replies} = comment
 
-    const newComment = new Comment();
-    // comment.id,
-    // comment.content,
-    // comment.author,
-    // comment.post,
-    // comment.createdAt,
-    // comment.replies
+    const newComment = new Comment(comment.id, comment.content, comment.author, comment.post, comment.createdAt, comment.replies, comment.likes);
+    // comment.id, comment.content, comment.author, comment.post, comment.createdAt, comment.replies
 
     return newComment;
   }
 
-  public async createTags(postId: string, postTags: Tags[]): Promise<Tags[]> {
+  public async createTags(
+    postId: string,
+    postTags: string[]
+  ): Promise<string[]> {
     let newTags = [];
 
     for (let i = 0; i < postTags.length; i++) {
-      const tag = postTags[i];
+      const tagName = postTags[i];
 
       await prisma.tag.create({
         data: {
-          name: tag,
-          postId,
+          name: tagName,
+          posts:{
+            connect:{id: postId}
+          }
         },
       });
 
-      newTags.push(tag);
+      newTags.push(tagName);
     }
 
     return newTags;
