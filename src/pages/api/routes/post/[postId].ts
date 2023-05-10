@@ -8,7 +8,7 @@ export default async function post(req: NextApiRequest, res: NextApiResponse){
     
     switch (req.method) {
         case "GET":
-            await postController.getPostsbyAuthorId(req, res);
+            await postController.getPostsbyId(req, res);
             break;
         case "PUT":
             await postController.updatePost(req, res);
