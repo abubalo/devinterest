@@ -4,26 +4,40 @@ import { Post } from "./Post";
 export class Comment {
   private readonly id: string;
   private content: string;
-  private readonly author: User;
-  private readonly post: Post;
+  private readonly author: Partial<User>;
+  private readonly post: Partial<Post>;
+  private readonly like: string[];
   private readonly createdAt: Date;
+  // private readonly updatedAt?: Date;
+  private replyId: string | undefined;
   private replies?: Comment[] | undefined;
+  private parentCommentId: string | undefined;
+  private parentComment?: Comment | undefined;
 
   constructor(
     id: string,
     content: string,
-    author: User,
-    post: Post,
+    author: Partial<User>,
+    post: Partial<Post>,
+    like: string[],
     createdAt: Date,
-    replies: Comment[] = []
+    replyId: string | undefined,
+    replies: Comment[] | undefined,
+    parentCommentId: string | undefined,
+    parentComment: Comment | undefined
   ) {
     this.id = id;
     this.content = content;
     this.author = author;
     this.post = post;
+    this.like = like;
     this.createdAt = createdAt;
+    this.replyId = replyId;
     this.replies = replies;
+    this.parentCommentId = parentCommentId;
+    this.parentComment = parentComment;
   }
+
 
   public getId(): string {
     return this.id;
@@ -37,11 +51,11 @@ export class Comment {
     this.content = content;
   }
 
-  public getAuthor(): User {
+  public getAuthor(): Partial<User>  {
     return this.author;
   }
 
-  public getPost(): Post {
+  public getPost(): Partial<Post> {
     return this.post;
   }
 
