@@ -1,14 +1,17 @@
 
 
-const DATABASE_URL = process.env.DATABASE_URL
-const DIRECT_DATABASE_URL = process.env.DIRECT_DATABASE_URL
-const SHADOW_DATABASE_URL = process.env.SHADOW_DATABASE_URL
+const GOOGLE_ID = process.env.GOOGLE_ID
+const GOOGLE_SECRET = process.env.GOOGLE_SECRET
+
+const GITHUB_ID = process.env.GITHUB_ID
+const GITHUB_SECRET = process.env.GITHUB_SECRET
 
 const config = ({
     url:{
-        DATABASE_URL,
-        DIRECT_DATABASE_URL,
-        SHADOW_DATABASE_URL
+        GOOGLE_ID,
+        GOOGLE_SECRET,
+        GITHUB_ID,
+        GITHUB_SECRET
     }
 });
 
