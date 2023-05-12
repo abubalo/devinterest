@@ -18,11 +18,14 @@ class PostController {
 
   public async getAllPosts(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     try {
+      
         const posts = await postService.getAllPosts();
 
         if(!posts){
             res.status(404).json({error: "There is no post!"})
         }
+
+        res.status(200).json(posts);
     } catch (error: any) {
       console.log(error.message);
       res.status(500).json({ error: "Internal server error!" });
@@ -31,12 +34,13 @@ class PostController {
 
   public async getPostsbyId(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     try {
-        const id = typeof req.query.id
+      const id = typeof req.query.id === 'string' ? req.query.id : undefined;
         
         if(id == undefined){
           res.status(400).json({ message: 'Invalid request or missing ID parameter' });
           return;
         }
+        
         const posts = await postService.getPostsbyId(id);
 
         if(!posts){
