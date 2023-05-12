@@ -29,3 +29,14 @@ body {
 
     font-family: 'Plus Jakarta Sans', sans-serif;
 }
+
+input[type="text"],
+input[type="email"],
+input[type="password"]{
+  @apply bg-background p-2 outline-none focus:bg-cardColor rounded-md transition-all duration-75 ease-linear
+}
+
+
+aside svg{
+  @apply text-2xl
+}
