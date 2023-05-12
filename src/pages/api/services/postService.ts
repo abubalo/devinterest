@@ -87,7 +87,6 @@ export class PostService {
         )
     );
 
-    // return posts
   }
 
   public async getPostsbyId(postId: string): Promise<Post[] | null> {
@@ -257,7 +256,7 @@ export class PostService {
     content: string,
     postId: string,
     authorId: string
-  ): Promise<Comment> {
+  ): Promise<Comment | object> {
 
     const comment = await prisma.comment.create({
       data: {
@@ -293,10 +292,10 @@ export class PostService {
 
     // const {id, conent, author, post, createdAt, replies} = comment
 
-    const newComment = new Comment(comment.id, comment.content, comment.author, comment.post, comment.createdAt, comment.replies, comment.likes);
+    // const newComment = new Comment(comment.id, comment.content, comment.author, comment.post, comment.createdAt, comment.replies, comment.likes);
     // comment.id, comment.content, comment.author, comment.post, comment.createdAt, comment.replies
 
-    return newComment;
+    return comment;
   }
 
   public async createTags(
