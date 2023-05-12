@@ -1,5 +1,5 @@
-import { Comment, Love } from "@/project-icons/Iconify";
-import { FollowIcon } from "@/project-icons/ReactIcons";
+import { Comment, Love, OptionsIcon } from "@/project-icons/Iconify";
+import { FollowIcon, MoreOptionIcon } from "@/project-icons/ReactIcons";
 import Image from "next/image";
 import React from "react";
 import Comments from "./Comments";
@@ -19,14 +19,21 @@ const PostContent = () => {
             />
           </div>
           <div>
-            <p className="text-lg font-semibold">Janet Macron</p>
+            <span className="flex gap-3 items-center">
+              <h1 className="text-lg font-semibold">Janet Macron </h1>
+              <span title="follow" className="text-2xl p-1 text-cardColor cursor-pointer hover:bg-cardColor/30 transition-all ease-linear rounded-md">
+                <FollowIcon />
+              </span>
+            </span>
             <p className="text-sm text-gray-300 -">Dev Advocate</p>
             <div>
               <p className="text-[12px] text-gray-500">posted 2 minutes ago</p>
             </div>
           </div>
         </div>
-        <div className="text-2xl p-2 text-cardColor cursor-pointer hover:bg-cardColor/30 transition-all ease-linear rounded-md"><FollowIcon/> </div>
+        <div title="options" className="text-2xl p-2 text-cardColor cursor-pointer hover:bg-cardColor/30 transition-all ease-linear rounded-md">
+          <MoreOptionIcon />
+        </div>
       </div>
 
       {/* post content */}
