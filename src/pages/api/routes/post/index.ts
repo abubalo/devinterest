@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { PostService } from "../../services/postService";
+import PostController from "../../controllers/postController";
 
-const postService = new PostService();
+const postController = new PostController();
 
 export default async function GET(req: NextApiRequest, res: NextApiResponse) {
-  await postService.getAllPosts();
+  await postController.getAllPosts(req, res);
 }
