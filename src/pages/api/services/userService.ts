@@ -1,28 +1,34 @@
 import { PrismaClient } from "@prisma/client";
 import { User } from "../models/User";
-import { Profile } from "../models/Profile";
 import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
 
+interface DecodedAccessToken {
+  userId: string;
+  iat: number;
+  exp: number;
+}
 
 const prisma = new PrismaClient();
 
 export class UserService {
-  
-  public async createUser(name: string, email: string, password: string): Promise<User | void | Error> {
-
-    try {   
+  public async createUser(
+    name: string,
+    email: string,
+    password: string
+  ): Promise<User | Error> {
+    try {
       const saltRounds = 10;
 
       const salt = bcrypt.genSaltSync(saltRounds);
-      
-      const hashedPassword = bcrypt.hashSync(password, salt).slice(0, 30);
+
+      const hashedPassword = bcrypt.hashSync(password, salt);
       const user = await prisma.user.create({
         data: {
           name,
           email,
           password: hashedPassword,
-        }
+        },
       });
       return new User(
         user.id,
@@ -31,26 +37,24 @@ export class UserService {
         user.password,
         user.createdAt,
         user.updatedAt
-        )
+      );
     } catch (error: any) {
-        console.log({providerError: error.message});
-        return error.message
+      console.log({ providerError: error.message });
+      return error.message;
     }
-
   }
 
-  public async getUserById(userId: string): Promise<User | null> {
+  public async getUser(userId: string): Promise<User | null> {
     const user = await prisma.user.findUnique({
       where: {
         id: userId,
       },
-      include:{
+      include: {
         follower: true,
         following: true,
         posts: true,
         chats: true,
-        
-      }
+      },
     });
 
     if (!user) {
@@ -63,19 +67,47 @@ export class UserService {
       user.email,
       user.password,
       user.createdAt,
-      user.updatedAt,
-    )
+      user.updatedAt
+    );
   }
 
-  public async getUserByEmail(userEmail: string): Promise<boolean | null> {
+  public async getUserById(userId: string): Promise<User | null> {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+
+      include: {
+        follower: true,
+        following: true,
+        posts: true,
+        chats: true,
+      },
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    return new User(
+      user.id,
+      user.name,
+      user.email,
+      user.password,
+      user.createdAt,
+      user.updatedAt
+    );
+  }
+
+  public async getUserByEmail(userEmail: string): Promise<boolean> {
     const user = await prisma.user.findUnique({
       where: {
         email: userEmail,
       },
     });
- 
+
     if (!user) {
-      return null;
+      return false;
     }
 
     return true;
@@ -86,43 +118,41 @@ export class UserService {
     data: Partial<User>
   ): Promise<User | null> {
     const user = await prisma.user.update({
-      where:{
-        id: userId
+      where: {
+        id: userId,
       },
-     data:{...data},
-     include:{
+      data: { ...data },
+      include: {
         comments: true,
         follower: true,
         following: true,
         posts: true,
         chats: true,
-     }  
-    }
-    );
-  
+      },
+    });
+
     if (!user) {
       console.log(`Could not update user with ID ${userId}`);
       return null;
     }
-    
+
     return new User(
       user.id,
       user.name,
       user.email,
       user.password,
       user.createdAt,
-      user.updatedAt,
-      // user.follower, 
+      user.updatedAt
+      // user.follower,
       // user.following
-    )
-    
+    );
   }
 
   public async deleteUser(userId: string): Promise<boolean | null> {
     const user = await prisma.user.findUnique({
-      where:{
-        id: userId
-      }
+      where: {
+        id: userId,
+      },
     });
 
     if (!user) {
@@ -132,23 +162,26 @@ export class UserService {
     await prisma.user.delete({
       where: {
         id: userId,
-      }
+      },
     });
 
     return true;
   }
 
-  public async followUser(userId: string, targetId: string): Promise<void | null> {
+  public async followUser(
+    userId: string,
+    targetId: string
+  ): Promise<void | null> {
     const currentUser = await prisma.user.findUnique({
       where: {
         id: userId,
       },
     });
-    
+
     if (!currentUser) {
       return null;
     }
-    
+
     await prisma.user.update({
       where: {
         id: userId,
@@ -161,7 +194,7 @@ export class UserService {
         },
       },
     });
-    
+
     await prisma.user.update({
       where: {
         id: targetId,
@@ -177,17 +210,16 @@ export class UserService {
   }
 
   public async unfollowUser(userId: string, targetId: string): Promise<void> {
-    
     const currentUser = await prisma.user.findUnique({
       where: {
         id: userId,
       },
     });
-    
+
     if (!currentUser) {
       throw new Error(`User with ID ${userId} not found`);
     }
-    
+
     await prisma.user.update({
       where: {
         id: userId,
@@ -200,7 +232,7 @@ export class UserService {
         },
       },
     });
-    
+
     await prisma.user.update({
       where: {
         id: targetId,
@@ -215,7 +247,10 @@ export class UserService {
     });
   }
 
-  public async authenticateUser(userEmail: string ,password: string): Promise<boolean | null> {
+  public async authenticateUser(
+    userEmail: string,
+    password: string
+  ): Promise<boolean | null> {
     // Todo add verify access token
 
     const user = await prisma.user.findUnique({
@@ -228,9 +263,10 @@ export class UserService {
       return null;
     }
 
-    const passwordMatches = await bcrypt.compare(password, user.password);
+    const passwordMatches = bcrypt.compareSync(password, user.password);
 
     if (!passwordMatches) {
+      console.log("Password does not match");
       return null;
     }
 
@@ -238,19 +274,33 @@ export class UserService {
   }
 
   public async generateAccessToken(user: Partial<User>): Promise<string> {
-    const jtwSecret = process.env.JWT_SECRET;
+    const jwtSecret = process.env.JWT_SECRET;
 
-    if (!jtwSecret) {
-      throw new Error("JWT is not define");
+    if (!jwtSecret) {
+      throw new Error("JWT secret is not defined");
     }
-    const token: string = Jwt.sign({ sub: user }, jtwSecret, {
+
+    const token = Jwt.sign({ sub: user }, jwtSecret, {
       expiresIn: "1h",
     });
 
     return token;
   }
 
+  public async verifyAccesToken(token: string): Promise<DecodedAccessToken> {
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) throw new Error("Jwt secret is not provided");
 
+    return new Promise((resolve, reject) => {
+      Jwt.verify(token, jwtSecret, (error, decoded) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(decoded as DecodedAccessToken);
+        }
+      });
+    });
+  }
 }
 
 export default UserService;
