@@ -4,10 +4,10 @@ import axios from "axios";
 
 export type UserData =  Pick<User, "name" | "email" | "password">
 
-type LoginData = Pick<User, 'name' | 'email'>
+export type LoginData = Pick<User, 'email' | 'password'>
 
 const userApi = axios.create({
-  baseURL: "http://localhost:3000/api/user",
+  baseURL: "http://localhost:3000/api/routes/user",
 });
 
 
