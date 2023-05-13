@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useQueryClient, useMutation } from "react-query";
 import { addUser, UserData } from "@/queries/userQueries";
 import { useFormik } from "formik";
+import * as Yup from "yup"
 const Signup = () => {
   const [manualSignup, setManualSignUp] = useState<boolean>(false);
 
@@ -14,8 +15,8 @@ const Signup = () => {
     {
       onSuccess: (data) => {
         // handle success
-        console.log("User added successfully", data)
-        queryClient.invalidateQueries('addUser');
+        console.log("User added successfully", data);
+        queryClient.invalidateQueries("addUser");
       },
       onError: (error: any) => {
         // handle error
@@ -32,8 +33,16 @@ const Signup = () => {
       confirmPass: "",
     },
 
+    validationSchema: Yup.object({
+        name: Yup.string().min(6, "Name is to short").required("Name is required"),
+        email: Yup.string().email("Invalid email address").required("Email is required"),
+        password: Yup.string().min(6, "password length must be greater than 5").required("Password is required"),
+    }),
+
     onSubmit: (values) => {
-      mutate(values);
+      const {name, email, password} = values
+      console.log(email, password)
+      mutate({name, email, password});
     },
   });
 
@@ -67,7 +76,7 @@ const Signup = () => {
                 value={formik.values.name}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                name="fullname"
+                name="name"
                 placeholder="John Doe"
               />
             </div>
@@ -104,7 +113,10 @@ const Signup = () => {
                 placeholder=""
               />
             </div>
-            <button type="submit" className="w-full bg-primary p-4 hover:bg-primary/70 transition-all">
+            <button
+              type="submit"
+              className="w-full bg-primary p-4 hover:bg-primary/70 transition-all"
+            >
               Sign up
             </button>
           </form>
