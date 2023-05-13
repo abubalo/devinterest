@@ -6,7 +6,7 @@ import { FeedIcon } from "@/project-icons/Iconify";
 const Feed = () => {
   return (
     <div className="w-full flex flex-col bg-background">
-      <header className="sticky top-0 w-full flex items-center gap-2 p-4 bg-gray-700 z-2">
+      <header className="sticky top-0 w-full flex items-center gap-2 p-4 bg-gray-700 z-10">
         <FeedIcon />
         Feed
         </header>
