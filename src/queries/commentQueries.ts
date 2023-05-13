@@ -2,7 +2,7 @@ import axios from "axios"
 import { Comment } from "@prisma/client";
 
 const commentApi = axios.create({
-    baseURL: "http://localhost:3000/api/comment"
+    baseURL: "http://localhost:3000/api/routes/comment"
 })
 
 // export const getComments = async (): Promise<Comment[]> =>{

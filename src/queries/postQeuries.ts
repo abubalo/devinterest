@@ -4,7 +4,7 @@ import axios from "axios";
 export type CreatePostData = Pick<Post, "authorId"  | "content" | "tags">;
 
 const postApi = axios.create({
-  baseURL: "http://localhost:3000/api/post",
+  baseURL: "http://localhost:3000/api/routes/post",
 });
 
 export const getAllPosts = async (): Promise<Post[]> => {
