@@ -1,9 +1,10 @@
 import UserService from "@/pages/api/services/userService";
 import { User } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
+import {serialize} from "cookie"
 import { validateCreateUser } from "../validations/userValidation";
 
-export interface ExtentendNextApiRequest extends NextApiRequest{
+export interface ExtendedNextApiRequest extends NextApiRequest{
     name: string;
     email: string;
     password?: string,
@@ -12,17 +13,17 @@ const userService = new UserService();
 
 class UserController{
 
-    public createUser = async (req: ExtentendNextApiRequest, res:NextApiResponse): Promise<void> =>{
+    public createUser = async (req: ExtendedNextApiRequest, res:NextApiResponse): Promise<void> =>{
 
         try {
             
             // validate user data
-            // const {error}: any = await validateCreateUser(req.body);
+            const {error}: any = await validateCreateUser(req.body);
 
-            // if(error){
-            //     res.status(400).json({ error: error.details[0].message });
-            //     return;
-            // }
+            if(error){
+                res.status(400).json({ error: error.details[0].message });
+                return;
+            }
 
             const {name, email, password} = req.body;
     
@@ -43,7 +44,7 @@ class UserController{
     
     }
     
-     public login = async (req: ExtentendNextApiRequest, res:NextApiResponse): Promise<void> =>{
+     public login = async (req: ExtendedNextApiRequest, res:NextApiResponse): Promise<void> =>{
         try {
             const {email, password} = req.body;
             const user = await userService.authenticateUser(email, password);
@@ -55,6 +56,8 @@ class UserController{
     
             // Generate token ad send it back to client       
             const token = await userService.generateAccessToken(user);
+            const cookie = serialize("token", token, { httpOnly: true, secure: true, sameSite: "strict" });
+            res.setHeader("Set-Cookie", cookie);
             await res.status(200).json({token});
     
         } catch (error: any) {
@@ -63,6 +66,23 @@ class UserController{
         }
     
         
+    }
+
+    public getUser = async (req: NextApiRequest, res:NextApiResponse): Promise<void> =>{
+        const token = req.cookies.token;
+      
+       try {
+       
+        const decodedToken = await userService.verifyAccesToken(token as string);
+        const userId = decodedToken.userId;
+
+        const user = await userService.getUser(userId);
+
+        res.status(200).json(user);
+       } catch (error) {
+        
+       }
+    
     }
 
      public getUserById = async (req: NextApiRequest, res:NextApiResponse): Promise<void> =>{
@@ -97,18 +117,23 @@ class UserController{
     }
     
      public deleteUser = async (req: NextApiRequest, res:NextApiResponse): Promise<void> =>{
-        try {
-            const {id} = req.body
+         
+         try {
+            const id = typeof req.query.id === 'string' ? req.query.id : undefined;
+            if(id == undefined){
+                res.status(400).json({ message: 'Invalid or missing ID parameter' });
+                return;
+            }
             const deletedUser = await userService.deleteUser(id);
     
             if(!deletedUser){
                 res.status(404).json("User not found");
             }
     
-            res.status(200).send("Success")
+            res.status(200).send("Success");
         } catch (error: any) {
             console.log(error.message);
-            res.status(500).json({error: "Unable to delete user, please try again!"})
+            res.status(500).json({error: "Unable to delete user, please try again!"});
         }
     }
 }
