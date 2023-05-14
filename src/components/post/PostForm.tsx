@@ -1,16 +1,18 @@
 import Image from "next/image";
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import React, { useState, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { MediaIcon, EmojiIcon } from "@/project-icons/ReactIcons";
 import { GifIcon } from "@/project-icons/Iconify";
 import { useQueryClient, useMutation } from "react-query";
 import { addPost, CreatePostData } from "@/queries/postQeuries";
-
+import { UserContext } from "@/hooks/UserContext";
 const PostForm = () => {
   const [value, setValue] = useState("");
   const [expand, setExpand] = useState(false);
 
-  function handleTextareaSize(e: ChangeEvent<HTMLTextAreaElement>) {
+  const {user} = useContext(UserContext);
+
+  function handleTextareaSize(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setValue(e.target.value);
     const textarea = e.target;
     textarea.style.height = "auto";
@@ -35,20 +37,22 @@ const PostForm = () => {
     }
   );
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     // TODO get authorId
-    const authorId = "jj";
-    const content = value;
-    const tags = ["ddd"];
+    const data: CreatePostData = {
+      id: user?.id,
+      content: value,
+      tags: []
+    }
 
-    // mutate({authorId, content, tags})
+    mutate(data);
 
     setValue("");
     setExpand(false);
+    console.log(value)
   };
-
   return (
     <AnimatePresence>
       <form
@@ -57,10 +61,10 @@ const PostForm = () => {
       >
         <div className="w-12 h-12 overflow-hidden rounded-full bg-online aspect-square">
           <Image
-            src="/assets/img1.jpg"
+            src={"/assets/img1.jpg"}
             width={50}
             height={50}
-            alt="user image"
+            alt={2}
           />
         </div>
         <motion.div
@@ -79,7 +83,7 @@ const PostForm = () => {
             cols={10}
           ></motion.textarea>
           {expand && (
-            <AnimatePresence>
+            <>
               <motion.div
                 layout="position"
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -112,7 +116,7 @@ const PostForm = () => {
                   Post
                 </button>
               </motion.div>
-            </AnimatePresence>
+            </>
           )}
         </motion.div>
       </form>
