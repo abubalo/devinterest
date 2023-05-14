@@ -83,7 +83,7 @@ export class PostService {
           post.author,
           post.tags,
           post.likes,
-          // post.comments,
+          post.comments,
         )
     );
 
@@ -123,7 +123,7 @@ export class PostService {
           post.author,
           post.likes,
           post.tags,
-          // post.comments
+          post.comments
         )
     );
   }
@@ -162,7 +162,7 @@ export class PostService {
           post.author,
           post.likes,
           post.tags,
-          // post.comments
+          post.comments
         )
     );
 
@@ -211,7 +211,7 @@ export class PostService {
         post.author,
         post.tags,
         post.likes,
-        // post.comments,
+        post.comments,
       );
 
       // return post
