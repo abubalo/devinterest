@@ -1,13 +1,17 @@
+import { useRouter } from "next/router";
 import { GithubIcon, GoogleIcon } from "@/project-icons/ReactIcons";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useQueryClient, useMutation } from "react-query";
 import { LoginData, loginUser } from "@/queries/userQueries";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { UserContext } from "@/hooks/UserContext";
 
 const Login = () => {
+  const { setUser } = useContext(UserContext)
   const [manualSignup, setManualSignUp] = useState<boolean>(false);
 
+  const router = useRouter()
   const queryClient = useQueryClient();
 
   const { mutate, isLoading, isError, error, isSuccess } = useMutation(
@@ -16,8 +20,9 @@ const Login = () => {
     {
       onSuccess: (data) => {
         // handle success
-        console.log("User added Loged in", data);
+        setUser(data);
         queryClient.invalidateQueries("loginUser");
+        router.push("/");
       },
       onError: (error: any) => {
         // handle error
@@ -94,7 +99,7 @@ const Login = () => {
               type="submit"
               className="w-full bg-primary p-4 hover:bg-primary/70 transition-all"
             >
-              Sign up
+              Login
             </button>
           </form>
         )}
