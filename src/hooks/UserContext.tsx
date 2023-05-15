@@ -14,8 +14,8 @@ export const UserContext = createContext<UserContextValue>({
 });
 
 const UserContextProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<Partial<User> | null>(null);
-
+  const [user, setUser] = useState<Partial<User> | null>({});
+  
   const { data, isError, error, isSuccess } = useQuery<User>(
     "userProfile",
     getUser
@@ -25,9 +25,17 @@ const UserContextProvider = ({ children }: { children: ReactNode }) => {
     if (isSuccess && data) {
       setUser(data);
     }
+
   }, [isSuccess, data]);
 
-  return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
+  console.log("Data:", data);
+  console.log("isSuccess:", isSuccess);
+
+  return (
+    <UserContext.Provider value={{ user, setUser }}>
+      {children}
+    </UserContext.Provider>
+  );
 };
 
 export default UserContextProvider;
