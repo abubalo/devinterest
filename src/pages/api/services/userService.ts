@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { User } from "../models/User";
+import { User } from "@prisma/client";
 import bcrypt from "bcrypt";
 import Jwt from "jsonwebtoken";
 
@@ -30,14 +30,16 @@ export class UserService {
           password: hashedPassword,
         },
       });
-      return new User(
-        user.id,
-        user.name,
-        user.email,
-        user.password,
-        user.createdAt,
-        user.updatedAt
-      );
+
+      return user
+      // return new User(
+      //   user.id,
+      //   user.name,
+      //   user.email,
+      //   user.password,
+      //   user.createdAt,
+      //   user.updatedAt
+      // );
     } catch (error: any) {
       console.log({ providerError: error.message });
       return error.message;
@@ -61,14 +63,15 @@ export class UserService {
       return null;
     }
 
-    return new User(
-      user.id,
-      user.name,
-      user.email,
-      user.password,
-      user.createdAt,
-      user.updatedAt
-    );
+    return user;
+    // return new User(
+    //   user.id,
+    //   user.name,
+    //   user.email,
+    //   user.password,
+    //   user.createdAt,
+    //   user.updatedAt
+    // );
   }
 
   public async getUserById(userId: string): Promise<User | null> {
@@ -88,15 +91,15 @@ export class UserService {
     if (!user) {
       return null;
     }
-
-    return new User(
-      user.id,
-      user.name,
-      user.email,
-      user.password,
-      user.createdAt,
-      user.updatedAt
-    );
+    return user;
+    // return new User(
+    //   user.id,
+    //   user.name,
+    //   user.email,
+    //   user.password,
+    //   user.createdAt,
+    //   user.updatedAt
+    // );
   }
 
   public async getUserByEmail(userEmail: string): Promise<boolean> {
@@ -136,16 +139,17 @@ export class UserService {
       return null;
     }
 
-    return new User(
-      user.id,
-      user.name,
-      user.email,
-      user.password,
-      user.createdAt,
-      user.updatedAt
-      // user.follower,
-      // user.following
-    );
+    return user;
+    // return new User(
+    //   user.id,
+    //   user.name,
+    //   user.email,
+    //   user.password,
+    //   user.createdAt,
+    //   user.updatedAt
+    //   // user.follower,
+    //   // user.following
+    // );
   }
 
   public async deleteUser(userId: string): Promise<boolean | null> {
@@ -250,7 +254,7 @@ export class UserService {
   public async authenticateUser(
     userEmail: string,
     password: string
-  ): Promise<boolean | null> {
+  ): Promise<User | null> {
     // Todo add verify access token
 
     const user = await prisma.user.findUnique({
@@ -270,7 +274,7 @@ export class UserService {
       return null;
     }
 
-    return true;
+    return user;
   }
 
   public async generateAccessToken(user: Partial<User>): Promise<string> {
