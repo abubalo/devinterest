@@ -5,5 +5,5 @@ const userController = new UserController();
 
 // Get all users
 export default async function GET(req: NextApiRequest, res: NextApiResponse){
-    await userController.getUserById(req, res);
+    await userController.getUser(req, res);
 }
