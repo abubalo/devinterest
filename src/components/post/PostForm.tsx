@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { MediaIcon, EmojiIcon } from "@/project-icons/ReactIcons";
 import { GifIcon } from "@/project-icons/Iconify";
 import { useQueryClient, useMutation } from "react-query";
-import { addPost, CreatePostData } from "@/queries/postQeuries";
+import { addPost, CreatePostData } from "@/queries/postQueries";
 import { UserContext } from "@/hooks/UserContext";
 const PostForm = () => {
   const [value, setValue] = useState("");
