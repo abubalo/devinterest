@@ -1,20 +1,20 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import PostController from "../../controllers/postController";
 
-const postController = new PostController();
+
 
 // Handles GET, PUT, and DELETE requests for a specific post
 export default async function post(req: NextApiRequest, res: NextApiResponse){
     
     switch (req.method) {
         case "GET":
-            await postController.getPostsbyId(req, res);
+            await PostController.getPostsbyId(req, res);
             break;
         case "PUT":
-            await postController.updatePost(req, res);
+            await PostController.updatePost(req, res);
             break;
         case "DELETE":
-            await postController.deletePost(req, res);
+            await PostController.deletePost(req, res);
             break;
     
         default:
