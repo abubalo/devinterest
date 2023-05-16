@@ -1,7 +1,7 @@
 import { Post } from "../types/postTypes";
 import axios from "axios";
 
-export type CreatePostData = Pick<Post, "author"  | "content" | "tags">;
+export type CreatePostData = Pick<Post, "authorId"  | "content">;
 
 const postApi = axios.create({
   baseURL: "http://localhost:3000/api/routes/post",
