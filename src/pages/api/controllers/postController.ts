@@ -1,14 +1,14 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { PostService } from "@/pages/api/services/postService";
+import PostService  from "../services/postService";
 
-const postService = new PostService();
+
 
 class PostController {
 
-  public async createPost(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+  public static async createPost(req: NextApiRequest, res: NextApiResponse): Promise<void> {
       try {
-        const { title, content, authorId, tags } = req.body;
-        const post = await postService.createPost( title, content, authorId, tags);
+        const {content, authorId, tags } = req.body;
+        const post = await PostService.createPost( content, authorId, tags);
         res.status(200).json(post);
     } catch (error: any) {
       console.log(error.message);
@@ -16,10 +16,10 @@ class PostController {
     }
   } 
 
-  public async getAllPosts(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+  public static async getAllPosts(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     try {
       
-        const posts = await postService.getAllPosts();
+        const posts = await PostService.getAllPosts();
 
         if(!posts){
             res.status(404).json({error: "There is no post!"})
@@ -32,7 +32,7 @@ class PostController {
     }
   }
 
-  public async getPostsbyId(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+  public static async getPostsbyId(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     try {
       const id = typeof req.query.id === 'string' ? req.query.id : undefined;
         
@@ -41,7 +41,7 @@ class PostController {
           return;
         }
         
-        const posts = await postService.getPostsbyId(id);
+        const posts = await PostService.getPostsbyId(id);
 
         if(!posts){
             res.status(404).json({error: "User does not have posts!"});
@@ -55,10 +55,10 @@ class PostController {
       res.status(500).json({ error: "Unable to fetch posts"});
     }
   }
-  public async getPostsbyAuthorId(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+  public static async getPostsbyAuthorId(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     try {
         const {id} = req.body;
-        const posts = await postService.getPostsbyAuthorId(id);
+        const posts = await PostService.getPostsbyAuthorId(id);
 
         if(!posts){
             res.status(404).json({error: "User does not have posts!"});
@@ -73,10 +73,10 @@ class PostController {
     }
   }
 
-  public async updatePost(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+  public static async updatePost(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     try {
         const {id, author, title, content} = req.body;
-        const updatedPost = await postService.updatePost(id, author, {title, content} as Record<string, number> );
+        const updatedPost = await PostService.updatePost(id, author, {title, content} as Record<string, number> );
 
         if(!updatedPost){
             res.status(404).json({error: "Post does not exist!"});
@@ -89,10 +89,10 @@ class PostController {
     }
   }
 
-  public async deletePost(req: NextApiRequest, res: NextApiResponse): Promise<void> {
+  public static async deletePost(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     try {
         const {id, author} = req.body;
-        const deletePost = await postService.deletePost(id, author);
+        const deletePost = await PostService.deletePost(id, author);
         
         if(!deletePost){
             res.status(404).json({error: "Post does not exist!"});
@@ -105,10 +105,10 @@ class PostController {
     }
   }
 
-  public async createComment(req: NextApiRequest, res:NextApiResponse): Promise<void>{
+  public static async createComment(req: NextApiRequest, res:NextApiResponse): Promise<void>{
     const {content, postId, authorId} = req.body;
     try {
-      const comment = await postService.createComment(content, postId, authorId)
+      const comment = await PostService.createComment(content, postId, authorId)
 
     if(!comment){
       res.status(404).json({error: "User not or post not found"})
