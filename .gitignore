@@ -4,12 +4,15 @@
 /documentation
 
 # hide prisma migration
-/prisma/migrations/*
-!/prisma/migrations/.keep
+/database/prisma/migrations/*
+/database/prisma/migrations/
+!/database/prisma/migrations/.keep
+/database/prisma/migrations/*.toml
 # dependencies
 /node_modules
 /.pnp
 .pnp.js
+
 
 # hide .txt
 *.txt
