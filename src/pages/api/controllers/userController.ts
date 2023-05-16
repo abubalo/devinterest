@@ -1,4 +1,4 @@
-import UserService from "@/pages/api/services/userService";
+import UserService from "../services/userService";
 import { NextApiRequest, NextApiResponse } from "next";
 import { serialize, parse } from "cookie";
 import { validateCreateUser } from "../validations/userValidation";
@@ -8,10 +8,11 @@ export interface ExtendedNextApiRequest extends NextApiRequest {
   email: string;
   password?: string;
 }
-const userService = new UserService();
+
 
 class UserController {
-  public createUser = async (
+
+  public static createUser = async (
     req: ExtendedNextApiRequest,
     res: NextApiResponse
   ): Promise<void> => {
@@ -26,13 +27,13 @@ class UserController {
 
       const { name, email, password } = req.body;
 
-      const isUserExist = await userService.getUserByEmail(email);
+      const isUserExist = await UserService.getUserByEmail(email);
 
       if (isUserExist) {
         res.status(409).json("User already exists");
       }
 
-      const user = await userService.createUser(name, email, password);
+      const user = await UserService.createUser(name, email, password);
 
       res.status(201).json(user);
     } catch (error: any) {
@@ -41,13 +42,13 @@ class UserController {
     }
   };
 
-  public login = async (
+  public static login = async (
     req: ExtendedNextApiRequest,
     res: NextApiResponse
   ): Promise<void> => {
     try {
       const { email, password } = req.body;
-      const user = await userService.authenticateUser(email, password);
+      const user = await UserService.authenticateUser(email, password);
 
       if (!user) {
         res.status(401).json("Invalid password or email");
@@ -55,7 +56,7 @@ class UserController {
       }
 
       // Generate token ad send it back to client
-      const token = await userService.generateAccessToken(user);
+      const token = await UserService.generateAccessToken(user);
       const cookie = serialize("token", token, {
         httpOnly: true,
         secure: true,
@@ -69,7 +70,7 @@ class UserController {
     }
   };
 
-  public getUser = async (
+  public static getUser = async (
     req: NextApiRequest,
     res: NextApiResponse
   ): Promise<void> => {
@@ -82,19 +83,20 @@ class UserController {
         return;
       }
 
-      const decodedToken = await userService.verifyAccesToken(token as string);
-      const userId = decodedToken.userId;
+      const decodedToken = await UserService.verifyAccessToken(token as string);
+      const userId = decodedToken.id;
+      console.log("\nValidate Token: =>", decodedToken)
 
-      const user = await userService.getUser(userId);
+      const user = await UserService.getUser(userId as string);
 
       res.status(200).json(user);
     } catch (error: any) {
-      console.log(error.message);
+      console.log("jwt server error: ",error.message);
       res.status(500).json({ message: "Could not fetch user data" });
     }
   };
 
-  public getUserById = async (
+  public static getUserById = async (
     req: NextApiRequest,
     res: NextApiResponse
   ): Promise<void> => {
@@ -103,18 +105,18 @@ class UserController {
       res.status(400).json({ message: "Invalid or missing ID parameter" });
       return;
     }
-    const user = await userService.getUserById(id);
+    const user = await UserService.getUserById(id);
 
     res.status(200).json(user);
   };
 
-  public updateUser = async (
+  public static updateUser = async (
     req: NextApiRequest,
     res: NextApiResponse
   ): Promise<void> => {
     try {
       const { id, name, email, password } = req.body;
-      const updateUser = await userService.updateUser(id, {
+      const updateUser = await UserService.updateUser(id, {
         name,
         email,
         password,
@@ -131,7 +133,7 @@ class UserController {
     }
   };
 
-  public deleteUser = async (
+  public static deleteUser = async (
     req: NextApiRequest,
     res: NextApiResponse
   ): Promise<void> => {
@@ -141,7 +143,7 @@ class UserController {
         res.status(400).json({ message: "Invalid or missing ID parameter" });
         return;
       }
-      const deletedUser = await userService.deleteUser(id);
+      const deletedUser = await UserService.deleteUser(id);
 
       if (!deletedUser) {
         res.status(404).json("User not found");
