@@ -15,17 +15,16 @@ export const UserContext = createContext<UserContextValue>({
 
 const UserContextProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<Partial<User> | null>({});
-  
+
   const { data, isError, error, isSuccess } = useQuery<User>(
     "userProfile",
     getUser
-  );
+);
 
   useEffect(() => {
     if (isSuccess && data) {
       setUser(data);
     }
-
   }, [isSuccess, data]);
 
   console.log("Data:", data);
