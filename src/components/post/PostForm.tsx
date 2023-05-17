@@ -39,12 +39,14 @@ const PostForm = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if(value === "") return;
 
     // TODO get authorId
+    const userId = user?.id;
     const data: CreatePostData = {
-      id: user?.id,
+      authorId: userId,
       content: value,
-      tags: []
+      // tags: []
     }
 
     mutate(data);
@@ -53,6 +55,8 @@ const PostForm = () => {
     setExpand(false);
     console.log(value)
   };
+
+
   return (
     <AnimatePresence>
       <form
@@ -64,7 +68,7 @@ const PostForm = () => {
             src={"/assets/img1.jpg"}
             width={50}
             height={50}
-            alt={2}
+            alt={user?.name || ""}
           />
         </div>
         <motion.div
