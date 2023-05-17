@@ -1,20 +1,57 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
+import Link from "next/link";
 import Image from "next/image";
 import { EditIcon } from "@/project-icons/Iconify";
 import { UserContext } from "@/hooks/UserContext";
+import PostContent from "@/components/post/PostContent";
 
 const Index = () => {
-
-  const {user} = useContext(UserContext)
+  const { user } = useContext(UserContext);
   return (
-    <div className="w-[90%] mx-auto h-screen">
-      <div className="relative bg-foreground h-1/3">
-        {user?.name}
-        <span className="absolute bottom-10 left-[6%] z-10 bg-cardColor/30 backdrop-blur-lg p-2 rounded-full cursor-pointer">
-          <EditIcon />
-        </span>
-        <div className="absolute bg-cardColor w-24 h-24 rounded-full -bottom-8 overflow-hidden">
-          <Image src="/assets/img1.jpg" alt="" width={100} height={100} />
+    <div className="w-full mx-auto h-screen">
+      <div className=" relative bg-cover backdrop-blur-xl  h-1/3">
+        <div className="w-[90%] mx-auto">
+          {user && (
+            <div className="flex justify-end">
+              <Link href={"/settings"} className="w-max flex gap-2 items-center mt-6 bg-foreground/30 backdrop-blur-lg border border-neutral-300/20 px-6 py-3 rounded-full cursor-pointer hover:bg-neutral-700/10 transition-all duration-100 ease-linear">
+                <EditIcon />
+                Edit profile
+              </Link>
+            </div>
+          )}
+
+          <div className="absolute bg-cardColor w-32 h-32 border-4 border-neutral-50/30 backdrop-blur-xl rounded-full -bottom-20 overflow-hidden">
+            <Image src="/assets/img1.jpg" alt="" width={200} height={200} />
+          </div>
+          <div className="absolute text-lg -bottom-16 left-52">
+            <p>{user?.name}</p>
+            <p className="text-sm">{user?.username}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div className="w-full h-full md:w-1/2 mx-auto mt-28 ">
+        <div className="flex  p-2">
+          <span className="pr-12 py-3 border-b border-cardColor cursor-pointer">
+            Post
+          </span>
+          <span className="pr-12 py-3 border-b border-cardColor/50 cursor-pointer">
+            Followers
+          </span>
+          <span className="pr-12 py-3 border-b border-cardColor/50 cursor-pointer">
+            Following
+          </span>
+          <span className="pr-12 py-3 border-b border-cardColor/50 cursor-pointer">
+            Media
+          </span>
+          <span className="pr-12 py-3 border-b border-cardColor/50 cursor-pointer">
+            Stats
+          </span>
+        </div>
+        <div className="p-8 md:pl-0">
+          <div className="space-y-6">
+            <PostContent />
+          </div>
         </div>
       </div>
     </div>
