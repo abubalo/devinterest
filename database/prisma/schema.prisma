@@ -10,6 +10,7 @@ generator client {
 model User {
   id        String   @id @unique @default(cuid())
   name      String   @db.VarChar(100)
+  username  String?  @db.VarChar(100)
   email     String   @unique @db.VarChar(100)
   password  String   @db.VarChar(100)
   createdAt DateTime @default(now())
@@ -31,7 +32,7 @@ enum Gender {
   MALE
   FEMALE
   OTHER
-} 
+}
 
 model Profile {
   id        String  @id @unique @default(cuid())
@@ -50,11 +51,10 @@ model Profile {
 model Post {
   id        String   @id @unique @default(cuid())
   content   String
-  author   User   @relation(fields: [authorId], references: [id])
-  authorId String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
-
 
   comments Comment[]
   likes    Like[]
