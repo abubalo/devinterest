@@ -217,7 +217,6 @@ export default class PostService {
         post: {
           select: {
             id: true,
-            title: true,
           },
         },
         replies: true,
