@@ -1,11 +1,18 @@
-import {formatDistanceToNow} from "date-fns"
+import { formatDistanceToNow } from "date-fns";
 
-const PostedAgo = () => {
-    const post={
-        createdAt: new Date(Date.UTC(2023, 4, 5, 2, 30, 0)),
-    }
+type Props = {
+  createdAt: Date | number | string | undefined;
+};
 
-  return formatDistanceToNow(post.createdAt, { addSuffix: true });
-}
+const PostedAgo = ({ createdAt }: Props) => {
+  if (!createdAt) {
+    return null;
+  }
 
-export default PostedAgo
+  const parsedDate = new Date(createdAt);
+  const formattedDate = formatDistanceToNow(parsedDate, { addSuffix: true });
+
+  return <>{formattedDate}</>;
+};
+
+export default PostedAgo;
