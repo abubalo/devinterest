@@ -1,21 +1,19 @@
 import { PrismaClient } from "@prisma/client";
 import { Comment } from "../models/Comment";
-import { Post } from "../models/Post";
+import { Post } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export class PostService {
-  public async createPost(
-    title: string,
+export default class PostService {
+  public static async createPost(
     content: string,
     authorId: string,
     tags: string[],
   ): Promise<Post | void> {
 
-    console.log({title, content, authorId, tags});
+
     const post = await prisma.post.create({
       data: {
-        title,
         content,
         author:{
           connect: {id: authorId}
@@ -37,23 +35,13 @@ export class PostService {
         likes: true
       },
     });
-    return new Post(
-      post.id,
-      post.title,
-      post.content,
-      post.createdAt,
-      post.updatedAt,
-      post.author,
-      post.tags,
-      post.likes,
-      // post.comments,
-    );
+    
 
-    // return post
+    return post
   }
 
 
-  public async getAllPosts(): Promise<Post[] | null> {
+  public static async getAllPosts(): Promise<Post[] | null> {
     const posts = await prisma.post.findMany({
       include: {
         author: {
@@ -72,24 +60,11 @@ export class PostService {
       return null;
     }
 
-    return posts.map(
-      (post) =>
-        new Post(
-          post.id,
-          post.title,
-          post.content,
-          post.createdAt,
-          post.updatedAt,
-          post.author,
-          post.tags,
-          post.likes,
-          post.comments,
-        )
-    );
+    return posts
 
   }
 
-  public async getPostsbyId(postId: string): Promise<Post[] | null> {
+  public static async getPostsbyId(postId: string): Promise<Post[] | null> {
     const posts = await prisma.post.findMany({
       where: {
         authorId: postId,
@@ -112,23 +87,10 @@ export class PostService {
       return null;
     }
 
-    return posts.map(
-      (post) =>
-        new Post(
-          post.id,
-          post.title,
-          post.content,
-          post.createdAt,
-          post.updatedAt,
-          post.author,
-          post.likes,
-          post.tags,
-          post.comments
-        )
-    );
+    return posts
   }
 
-  public async getPostsbyAuthorId(authorId: string): Promise<Post[] | null> {
+  public static async getPostsbyAuthorId(authorId: string): Promise<Post[] | null> {
     const posts = await prisma.post.findMany({
       where: {
         authorId: authorId,
@@ -151,26 +113,11 @@ export class PostService {
       return null;
     }
 
-    return posts.map(
-      (post) =>
-        new Post(
-          post.id,
-          post.title,
-          post.content,
-          post.createdAt,
-          post.updatedAt,
-          post.author,
-          post.likes,
-          post.tags,
-          post.comments
-        )
-    );
-
-    // return posts
+    return posts
   }
   
 
-  public async updatePost(
+  public static async updatePost(
     postId: string,
     authorId: string,
     data: object
@@ -201,27 +148,15 @@ export class PostService {
       if (!post) {
         return null;
       }
+      return post;
 
-      return new Post(
-        post.id,
-        post.title,
-        post.content,
-        post.createdAt,
-        post.updatedAt,
-        post.author,
-        post.tags,
-        post.likes,
-        post.comments,
-      );
-
-      // return post
     } catch (error) {
       console.error(error);
       return null;
     }
   }
 
-  public async deletePost( postId: string, authorId: string): Promise<boolean | null> {
+  public static async deletePost( postId: string, authorId: string): Promise<boolean | null> {
 
     const postOwner = await prisma.user.findUnique({
       where: {
@@ -252,7 +187,7 @@ export class PostService {
     return true;
   }
 
-  public async createComment(
+  public static async createComment(
     content: string,
     postId: string,
     authorId: string
@@ -290,15 +225,10 @@ export class PostService {
       },
     });
 
-    // const {id, conent, author, post, createdAt, replies} = comment
-
-    // const newComment = new Comment(comment.id, comment.content, comment.author, comment.post, comment.createdAt, comment.replies, comment.likes);
-    // comment.id, comment.content, comment.author, comment.post, comment.createdAt, comment.replies
-
     return comment;
   }
 
-  public async createTags(
+  public static async createTags(
     postId: string,
     postTags: string[]
   ): Promise<string[]> {
@@ -322,13 +252,13 @@ export class PostService {
     return newTags;
   }
 
-  public async addReply(
+  public static async addReply(
     authorId: string,
     postId: string,
     commentId: string | string[]
   ): Promise<void> {}
 
-  // public bookmarkedPost(): Post{
+  // public static bookmarkedPost(): Post{
 
   // }
 }
