@@ -3,7 +3,7 @@ import Image from "next/image";
 import {Comment} from "../../types/CommentTypes"
 
 type CommentProps = {
-  comments: Comment[] | null
+  comments: Comment[] | undefined
 };
 
 const Comments = ({ comments }: CommentProps) => {
