@@ -1,18 +1,17 @@
 import { Comment, Love } from "@/project-icons/Iconify";
-import { LoveIcon } from "@/project-icons/CostomIcons";
 import { FollowIcon, MoreOptionIcon } from "@/project-icons/ReactIcons";
 import Image from "next/image";
-import React, { useContext } from "react";
+import { useContext, memo } from "react";
 import Comments from "./Comments";
 import { getAllPosts } from "../../queries/postQueries";
 import { useQuery } from "react-query";
 import { UserContext } from "@/hooks/UserContext";
+import PostedAgo from "./PostedAgo";
 
 const PostContent = () => {
   const { user } = useContext(UserContext);
-  console.log(user);
-  const { data: posts, isLoading, error } = useQuery("posts", getAllPosts);
-  console.log(posts);
+  
+  const { data: posts, isLoading, error } = useQuery(["posts"], getAllPosts);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -25,9 +24,8 @@ const PostContent = () => {
   return (
     <>
       {posts?.map((post) => (
-        <>
+        <div key={post.id}>
           <div
-            key={post.id}
             className="w-full flex flex-col bg-foreground h-auto p-4 space-y-5 border border-slate-400/10 rounded-md"
           >
             {/* User profile */}
@@ -53,10 +51,11 @@ const PostContent = () => {
                       <FollowIcon />
                     </span>
                   </span>
-                  <p className="text-sm text-gray-300 -">Dev Advocate</p>
+                  <p className="text-sm text-gray-300 -mt-2">{user?.username}</p>
                   <div>
                     <p className="text-[12px] text-gray-500">
-                      {post?.createdAt}
+                      {/* {post?.createdAt} */}
+                      <PostedAgo createdAt={post.createdAt}/>
                     </p>
                   </div>
                 </div>
@@ -113,12 +112,12 @@ const PostContent = () => {
                 </div>
               </div>
             </div>
-            {/* <Comments comments={post.comments} /> */}
+            <Comments comments={post.comments} />
           </div>
-        </>
+        </div>
       ))}
     </>
   );
 };
 
-export default PostContent;
+export default memo(PostContent) ;
