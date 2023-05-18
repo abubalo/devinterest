@@ -1,14 +1,16 @@
-import { HamburgerMenu, Message, Notification } from "@/project-icons/Iconify";
+import { UserContext } from "@/hooks/UserContext";
+import { HamburgerMenu,  Notification } from "@/project-icons/Iconify";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import Dropdown from "../widgets/Dropdown";
+import { useContext, useState } from "react";
 import MenuOption from "../widgets/MenuOption";
-import Notifications from "../widgets/Notifactions";
+
 
 const Header = () => {
   const [onClose, setOnClose] = useState<boolean>(false);
   const [onNotification, setOnNotification] = useState<boolean>(false);
+
+  const { user } = useContext(UserContext)
 
   return (
     <>
