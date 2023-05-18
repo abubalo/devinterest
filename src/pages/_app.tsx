@@ -1,3 +1,4 @@
+import Layout from "@/components/Layout";
 import UserContextProvider from "@/hooks/UserContext";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
@@ -9,7 +10,9 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <UserContextProvider>
-        <Component {...pageProps} />
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
         <ReactQueryDevtools initialIsOpen />
       </UserContextProvider>
     </QueryClientProvider>
