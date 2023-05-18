@@ -1,4 +1,4 @@
-import { BookmarkIcon, Explore, FeedIcon, Premium } from "@/project-icons/Iconify";
+import { BookmarkIcon, Explore, FeedIcon, Message, Premium } from "@/project-icons/Iconify";
 import { FollowersIcon } from "@/project-icons/ReactIcons";
 import Link from "next/link";
 import React from "react";
@@ -11,7 +11,7 @@ const Siderbar = () => {
          <FeedIcon /> Feed 
         </Link>
         <Link href="" className="flex gap-2 items-center bg-cardColor/20 p-3 rounded-md cursor-pointer"><Explore /> Discover</Link>
-        <Link href="" className="flex gap-2 items-center bg-cardColor/20 p-3 rounded-md cursor-pointer"> <FollowersIcon/> Followers</Link>
+        <Link href="" className="flex gap-2 items-center bg-cardColor/20 p-3 rounded-md cursor-pointer"> <Message /> Messages</Link>
         <Link href="" className="flex gap-2 items-center bg-cardColor/20 p-3 rounded-md cursor-pointer"> <BookmarkIcon/> Bookmark</Link>
         <Link href="" className="flex gap-2 items-center bg-cardColor/20 p-3 rounded-md cursor-pointer"><Premium /> Subscription</Link>
       </div>
