@@ -12,8 +12,8 @@ const MenuOption = ({ onClose }: Props) => {
     <AnimatePresence>
       {onClose && (
         <Dropdown position={"top-[70px] right-5"}>
-          <Link href={"#"} className="p-2 w-full">
-            Settings
+          <Link href={"/profile"} className="p-2 w-full">
+            Profile
           </Link>
           <Link href={"#"} className="p-2 w-full">
             Support
