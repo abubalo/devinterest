@@ -4,15 +4,21 @@ import Image from "next/image";
 import { EditIcon } from "@/project-icons/Iconify";
 import { UserContext } from "@/hooks/UserContext";
 import PostContent from "@/components/post/PostContent";
+import { BackWard } from "@/project-icons/ReactIcons";
 
 const Index = () => {
   const { user } = useContext(UserContext);
   return (
     <div className="w-full mx-auto h-screen">
+       {/* <div className="absolute top-6 p-4 mt-6 cursor-pointer"> */}
       <div className=" relative bg-cover backdrop-blur-xl  h-1/3">
         <div className="w-[90%] mx-auto">
           {user && (
-            <div className="flex justify-end">
+            <div className="flex justify-between">
+              <Link href={"/"} className="flex gap-2 items-center">
+                <BackWard /> Go home
+              </Link>
+        
               <Link href={"/settings"} className="w-max flex gap-2 items-center mt-6 bg-foreground/30 backdrop-blur-lg border border-neutral-300/20 px-6 py-3 rounded-full cursor-pointer hover:bg-neutral-700/10 transition-all duration-100 ease-linear">
                 <EditIcon />
                 Edit profile
