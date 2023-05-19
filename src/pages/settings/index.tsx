@@ -2,22 +2,29 @@ import React, { useContext } from "react";
 import Image from "next/image";
 import { UserContext } from "@/hooks/UserContext";
 import { EditIcon } from "@/project-icons/Iconify";
-import { CheckMark, DangerIcon } from "@/project-icons/ReactIcons";
+import { BackWard, CheckMark, DangerIcon } from "@/project-icons/ReactIcons";
+import Loader from "@/components/widgets/Loader";
+import Link from "next/link";
 
 const Settings = () => {
   const { user } = useContext(UserContext);
 
   return (
-    <div>
-      <div>
-        <p>General settings</p>
-        <p>Change password</p>
-        <p>
+    <div className="flex">
+      <div className="flex flex-col pt-8  ">
+        <p className="p-2">General settings</p>
+        <p className="p-2">Change password</p>
+        <p className="flex gap-2 items-center p-2">
           <DangerIcon /> Close account
         </p>
       </div>
       <div className="w-full h-screen space-y-9 bg-background md:w-2/3 md:mx-auto">
         <div className="">
+          <div className="p-4 mt-6 cursor-pointer">
+            <Link href={"/profile"} className="flex gap-2 items-center">
+              <BackWard /> go back
+            </Link>
+          </div>
           <div className="flex justify-between items-center p-4">
             <h1>Edit profile</h1>{" "}
             <span
@@ -109,15 +116,26 @@ const Settings = () => {
           </div>
           <div className="w-full m-10 space-y-3">
             <h1 className="text-xl font-semibold">
-              Interest &nbsp; <span className=" text-slate-600"> (maximum 5)</span>
+              Interest &nbsp;{" "}
+              <span className=" text-slate-600"> (maximum 5)</span>
             </h1>
 
             <div className="border flex flex-wrap gap-x-3 h-40 p-3">
-              <span className="h-max px-4 p-2 bg-foreground rounded-md ">Python</span>
-              <span className="h-max px-4 p-2 bg-foreground rounded-md">C#</span>
-              <span className="h-max px-4 p-2 bg-foreground rounded-md">C++</span>
-              <span className="h-max px-4 p-2 bg-foreground rounded-md">DevOps</span>
-              <span className="h-max px-4 p-2 bg-foreground rounded-md">Rust</span>
+              <span className="h-max px-4 p-2 bg-foreground rounded-md ">
+                Python
+              </span>
+              <span className="h-max px-4 p-2 bg-foreground rounded-md">
+                C#
+              </span>
+              <span className="h-max px-4 p-2 bg-foreground rounded-md">
+                C++
+              </span>
+              <span className="h-max px-4 p-2 bg-foreground rounded-md">
+                DevOps
+              </span>
+              <span className="h-max px-4 p-2 bg-foreground rounded-md">
+                Rust
+              </span>
               <label htmlFor="interest">
                 <input
                   type="text"
@@ -129,7 +147,7 @@ const Settings = () => {
             </div>
           </div>
         </div>
-        <button className="w-full p-4 bg-primary rounded-md">
+        <button className="w-full mb-8 p-4 bg-primary rounded-md">
           Update Account
         </button>
       </div>
