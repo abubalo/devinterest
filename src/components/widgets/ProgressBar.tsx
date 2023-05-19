@@ -21,9 +21,7 @@ const ProgressBar = () => {
   }, [router]);
   return (
     <div
-      className={` bg-primary h-2 transition-all duration-200 ease-in-out z-50 ${
-        loading ? "loading" : ""
-      }`}
+      className={`fixed top-0 bg-white h-1 transition-all duration-500 ease-in-out z-50 `}
       style={{ width: loading ? "100%" : "0%" }}
     />
   );
