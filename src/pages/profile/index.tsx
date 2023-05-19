@@ -10,7 +10,7 @@ const Index = () => {
   const { user } = useContext(UserContext);
   return (
     <div className="w-full mx-auto h-screen">
-       {/* <div className="absolute top-6 p-4 mt-6 cursor-pointer"> */}
+       {/* <div className="absolute top-6 p-git4 mt-6 cursor-pointer"> */}
       <div className=" relative bg-cover backdrop-blur-xl  h-1/3">
         <div className="w-[90%] mx-auto">
           {user && (
