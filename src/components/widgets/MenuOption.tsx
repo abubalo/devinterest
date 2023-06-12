@@ -15,13 +15,13 @@ const MenuOption = ({ onClose }: Props) => {
           <Link href={"/profile"} className="p-2 w-full">
             Profile
           </Link>
-          <Link href={"#"} className="p-2 w-full">
+          <Link href={"/support"} className="p-2 w-full">
             Support
           </Link>
-          <Link href={"#"} className="p-2 w-full">
+          <Link href={""} className="p-2 w-full">
             Logout
           </Link>
-          <Link href={"#"} className="p-2 w-full">
+          <Link href={"/login"} className="p-2 w-full">
             Sign in
           </Link>
         </Dropdown>
