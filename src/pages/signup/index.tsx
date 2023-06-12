@@ -4,6 +4,7 @@ import { useQueryClient, useMutation } from "react-query";
 import { addUser, UserData } from "@/queries/userQueries";
 import { useFormik } from "formik";
 import * as Yup from "yup"
+import Link from "next/link";
 const Signup = () => {
   const [manualSignup, setManualSignUp] = useState<boolean>(false);
 
@@ -122,6 +123,9 @@ const Signup = () => {
             </button>
           </form>
         )}
+        <div className="w-full flex flex-end">
+        <span className="text-sm text-slate-500">Already a user? <Link href="/login" className="text-white text-slate-300">Login</Link></span>
+      </div>
       </div>
     </main>
   );

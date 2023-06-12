@@ -6,12 +6,13 @@ import { LoginData, loginUser } from "@/queries/userQueries";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { UserContext } from "@/hooks/UserContext";
+import Link from "next/link";
 
 const Login = () => {
-  const { setUser } = useContext(UserContext)
+  const { setUser } = useContext(UserContext);
   const [manualSignin, setManualSignin] = useState<boolean>(false);
 
-  const router = useRouter()
+  const router = useRouter();
   const queryClient = useQueryClient();
 
   const { mutate, isLoading, isError, error, isSuccess } = useMutation(
@@ -82,7 +83,15 @@ const Login = () => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 placeholder="johndoe@gmail.com"
+                className={
+                  formik.errors.email && formik.touched.email
+                    ? "border-red-500"
+                    : ""
+                }
               />
+              {formik.errors.email && formik.touched.email && (
+                <p className="text-red-500">{formik.errors.email}</p>
+              )}
             </div>
             <div className="flex flex-col space-y-1">
               <label htmlFor="password">Password:</label>
@@ -93,7 +102,15 @@ const Login = () => {
                 onBlur={formik.handleBlur}
                 name="password"
                 placeholder=""
+                className={
+                  formik.errors.password && formik.touched.password
+                    ? "border-red-500"
+                    : ""
+                }
               />
+              {formik.errors.password && formik.touched.password && (
+                <p className="text-red-500">{formik.errors.password}</p>
+              )}
             </div>
             <button
               type="submit"
@@ -103,6 +120,14 @@ const Login = () => {
             </button>
           </form>
         )}
+        <div className="w-full flex flex-end">
+          <span className="text-sm text-slate-500">
+            New to Dev.int?{" "}
+            <Link href="/signup" className="text-white text-slate-300">
+              sign up
+            </Link>
+          </span>
+        </div>
       </div>
     </main>
   );
