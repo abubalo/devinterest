@@ -257,7 +257,5 @@ export default class PostService {
     commentId: string | string[]
   ): Promise<void> {}
 
-  // public static bookmarkedPost(): Post{
-
-  // }
+  
 }
