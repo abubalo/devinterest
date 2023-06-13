@@ -83,7 +83,7 @@ model Comment {
   like      Like[]
   postId    String   @unique
 
-  replyId String   @unique
+  replyId String?   @unique
   replies Comment? @relation("Replies", fields: [replyId], references: [id])
 
   ParentComment Comment? @relation("Replies")
