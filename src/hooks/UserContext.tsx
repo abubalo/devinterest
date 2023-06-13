@@ -27,8 +27,6 @@ const UserContextProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [isSuccess, data]);
 
-  console.log("Data:", data);
-  console.log("isSuccess:", isSuccess);
 
   return (
     <UserContext.Provider value={{ user, setUser }}>
