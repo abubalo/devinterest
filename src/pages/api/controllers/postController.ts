@@ -111,7 +111,7 @@ class PostController {
       const comment = await PostService.createComment(content, postId, authorId)
 
     if(!comment){
-      res.status(404).json({error: "User not or post not found"})
+      res.status(404).json({error: "Post does not exist"})
     }
     res.status(200).json(comment);
 
