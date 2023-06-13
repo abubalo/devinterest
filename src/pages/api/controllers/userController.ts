@@ -85,7 +85,7 @@ class UserController {
 
       const decodedToken = await UserService.verifyAccessToken(token as string);
       const userId = decodedToken.id;
-      console.log("\nValidate Token: =>", decodedToken)
+    
 
       const user = await UserService.getUser(userId as string);
 
