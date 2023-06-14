@@ -19,7 +19,11 @@ const PostContent = () => {
     return <>error {error}</>;
   }
 
-  console.log(posts[6])
+  function handleLike(){
+    
+  }
+
+  // console.log(posts[6])
 
   return (
     <>
@@ -36,7 +40,7 @@ const PostContent = () => {
             {/* comment and likes tally */}
             <div className="flex gap-6">
               <div title="likes" className="flex gap-2 items-center">
-                <div className="cursor-pointer">
+                <div onClick={handleLike} className="cursor-pointer">
                   {/* <LoveIcon /> */}
                   <Love />
                 </div>
