@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { Comment } from "../models/Comment";
-import { Post } from "@prisma/client";
+import { Post, Comment, Like } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -8,21 +7,19 @@ export default class PostService {
   public static async createPost(
     content: string,
     authorId: string,
-    tags: string[],
+    tags: string[]
   ): Promise<Post | void> {
-
-
     const post = await prisma.post.create({
       data: {
         content,
-        author:{
-          connect: {id: authorId}
+        author: {
+          connect: { id: authorId },
         },
-        tags:{
-          create: tags ? tags.map(tagName => ({ name: tagName })) : []
+        tags: {
+          create: tags ? tags.map((tagName) => ({ name: tagName })) : [],
+        },
       },
-      },
-      
+
       include: {
         author: {
           select: {
@@ -32,14 +29,12 @@ export default class PostService {
         },
         comments: true,
         tags: true,
-        likes: true
+        likes: true,
       },
     });
-    
 
-    return post
+    return post;
   }
-
 
   public static async getAllPosts(): Promise<Post[] | null> {
     const posts = await prisma.post.findMany({
@@ -60,8 +55,7 @@ export default class PostService {
       return null;
     }
 
-    return posts
-
+    return posts;
   }
 
   public static async getPostsbyId(postId: string): Promise<Post[] | null> {
@@ -87,10 +81,12 @@ export default class PostService {
       return null;
     }
 
-    return posts
+    return posts;
   }
 
-  public static async getPostsbyAuthorId(authorId: string): Promise<Post[] | null> {
+  public static async getPostsbyAuthorId(
+    authorId: string
+  ): Promise<Post[] | null> {
     const posts = await prisma.post.findMany({
       where: {
         authorId: authorId,
@@ -113,9 +109,8 @@ export default class PostService {
       return null;
     }
 
-    return posts
+    return posts;
   }
-  
 
   public static async updatePost(
     postId: string,
@@ -131,7 +126,7 @@ export default class PostService {
           ...data,
           authorId: authorId,
         },
-        
+
         include: {
           author: {
             select: {
@@ -149,15 +144,16 @@ export default class PostService {
         return null;
       }
       return post;
-
     } catch (error) {
       console.error(error);
       return null;
     }
   }
 
-  public static async deletePost( postId: string, authorId: string): Promise<boolean | null> {
-
+  public static async deletePost(
+    postId: string,
+    authorId: string
+  ): Promise<boolean | null> {
     const postOwner = await prisma.user.findUnique({
       where: {
         id: authorId,
@@ -191,8 +187,7 @@ export default class PostService {
     content: string,
     postId: string,
     authorId: string
-  ): Promise<Comment | object> {
-
+  ): Promise<Comment> {
     const comment = await prisma.comment.create({
       data: {
         content,
@@ -217,10 +212,11 @@ export default class PostService {
         post: {
           select: {
             id: true,
+            content: true,
           },
         },
         replies: true,
-        like: true
+        like: true,
       },
     });
 
@@ -239,9 +235,9 @@ export default class PostService {
       await prisma.tag.create({
         data: {
           name: tagName,
-          posts:{
-            connect:{id: postId}
-          }
+          posts: {
+            connect: { id: postId },
+          },
         },
       });
 
@@ -251,11 +247,45 @@ export default class PostService {
     return newTags;
   }
 
+  public static async handleLikePost(postId: string): Promise<void> {
+    await prisma.like.create({
+      data: {
+        postId,
+      },
+    });
+  }
+
+  public static async handleUnlikePost(postId: string): Promise<void> {
+    await prisma.like.delete({
+      where: {
+        postId: postId,
+      },
+    });
+  }
+
+  public static async handleLikeComment(commentId: string): Promise<void> {
+    await prisma.like.create({
+      data: {
+        comment: {
+          connect: { id: commentId },
+        },
+      },
+    });
+  }
+
+  public static async handleUnlikeComment(commentId: string): Promise<void> {
+    await prisma.like.delete({
+      where: {
+        comment: {
+          id: CommentId,
+        },
+      },
+    });
+  }
+
   public static async addReply(
     authorId: string,
     postId: string,
     commentId: string | string[]
   ): Promise<void> {}
-
-  
 }
