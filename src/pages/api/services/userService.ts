@@ -45,7 +45,6 @@ export class UserService {
   }
 
   public static async getUser(userId: string): Promise<User | null> {
-    console.log("the userId is: ", userId)
     const user = await prisma.user.findUnique({
       where: {
         id: userId,
