@@ -29,7 +29,7 @@ const Comments = ({ comments }: CommentProps) => {
                 />
               </div>
               <div>
-                <p className="text-sm">{comment?.author?.name}</p>
+                <p className="text-sm">{comment?.author}</p>
                 <p className="text-[0.6rem] text-gray-300 -">
                   {comment?.author}
                 </p>
