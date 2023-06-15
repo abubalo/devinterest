@@ -29,10 +29,10 @@ const Comments = ({ comments }: CommentProps) => {
                 />
               </div>
               <div>
-                <p className="text-sm">{comment?.author}</p>
+                {/* <p className="text-sm">{comment?.author}</p>
                 <p className="text-[0.6rem] text-gray-300 -">
                   {comment?.author}
-                </p>
+                </p> */}
                 <div>
                   <p className="text-[12px] text-gray-500">
                     {comment?.createdAt.toLocaleString()}
